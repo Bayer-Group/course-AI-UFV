@@ -1,0 +1,10 @@
+variavel,descricao,unidade,tipo,minimo,maximo,codigo_ausente,metodo
+parcela_id,Identificador único da parcela (P_<local>_<ano>_V_<número>),,texto,,,,gerado pelo sistema de ensaios
+ensaio_id,Identificador do ensaio (ENS_<local>_<ano>_V),,texto,,,,plano do ensaio
+ambiente_id,Local e safra (UDI = Uberlândia; SLG = Sete Lagoas; PGO = Ponta Grossa),,texto,,,,plano do ensaio
+germoplasma_nome,Identificador da linhagem como digitado no campo (padrão DH<ano>_<número>; regex ^DH[0-9]{2}_[0-9]{4}$),,texto,,,,etiqueta da parcela
+bloco,Bloco do delineamento em blocos casualizados,,inteiro,1,2,,plano do ensaio
+linha,Linha da parcela no croqui,,inteiro,1,,,croqui
+coluna,Coluna da parcela no croqui,,inteiro,1,,,croqui
+PROD,Produtividade de grãos do testcross corrigida a 13% de umidade,kg/ha,real,2000,20000,vazio,pesagem da parcela
+data_coleta,Data de colheita,AAAA-MM-DD,data,,,,caderno de campo

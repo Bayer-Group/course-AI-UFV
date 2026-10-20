@@ -1,0 +1,20 @@
+caminhos:
+  bruto: data/bruto/vcu_milho_2025_campo.csv
+  dicionario: docs/dicionario_de_dados.csv
+  registro_correcoes: docs/registro_de_correcoes.csv
+  intermediario: data/intermediario
+  processado: data/processado
+  output: output
+
+ids:
+  regex: "^DH[0-9]{2}_[0-9]{4}$"
+  prefixo_ranking: "DH25_"
+  prefixo_testemunha: "DH24_"
+
+qc:
+  chave_duplicata: [ensaio_id, linha, coluna]
+  prod_min: 2000
+  prod_max: 20000
+
+delineamento:
+  n_blocos: 2

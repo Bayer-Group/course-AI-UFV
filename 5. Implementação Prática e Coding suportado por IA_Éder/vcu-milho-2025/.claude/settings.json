@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": ["Bash(Rscript *)", "Bash(git status)", "Bash(git diff *)", "Bash(git log *)"],
+    "ask":   ["Bash(git commit *)"],
+    "deny":  ["Edit(/data/bruto/**)", "Bash(rm *)", "Bash(git push *)"]
+  }
+}

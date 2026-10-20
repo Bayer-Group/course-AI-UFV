@@ -1,0 +1,323 @@
+---
+title: "Roteiro da aula prática — VCU milho 2025"
+subtitle: "Seção 2 — Claude Code no VS Code"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE, collapse = TRUE)
+options(width = 100)
+```
+
+## Como usar este roteiro
+
+- Abra este arquivo no VS Code (ou RStudio) **ao lado** do painel do Claude Code, com a
+  raiz do projeto (`vcu-milho-2025/`) aberta como pasta.
+- Cada seção tem duas partes:
+  - **Prompt para o Claude Code**: copie o texto do bloco cinza e cole no painel do
+    agente. Não é código R, não rode como chunk.
+  - **Chunk de R**: depois que o agente terminar a etapa, rode o chunk (ou dê *Knit*
+    neste arquivo) para carregar o que foi gerado e conferir os números.
+- Os chunks estão protegidos com `eval = file.exists(...)`: se o arquivo esperado ainda
+  não existe, o chunk aparece no relatório, mas não quebra o *Knit*.
+- Caminhos são relativos à raiz do projeto: rode/knite a partir daqui, nunca de dentro
+  de `R/` ou `docs/`.
+
+```{r pacotes, include=FALSE}
+para_carregar <- c("yaml", "lme4")
+for (p in para_carregar) {
+  if (!requireNamespace(p, quietly = TRUE)) {
+    warning(sprintf("Pacote '%s' não encontrado. Instale com install.packages('%s').", p, p))
+  }
+}
+par <- tryCatch(yaml::read_yaml("config/parametros.yaml"), error = function(e) NULL)
+```
+
+---
+
+# Prática 1 — Primeira sessão, só leitura (Bloco 3)
+
+**Prompt (modo Plan):**
+```text
+Leia CLAUDE.md, README.md, PLANO.md, data/bruto/LEIA-ME.md e
+docs/dicionario_de_dados.csv. Em até 10 linhas: o que você entendeu sobre os dados,
+o que é proibido fazer e o que ainda está ambíguo. Não altere nenhum arquivo.
+```
+
+**Confira:** a resposta cita testcross, kg/ha, intervalo 2.000–20.000, padrão de ID,
+DBC com 2 blocos e a proibição de editar `data/bruto/`.
+
+**Teste da proteção (ainda no agente):**
+```text
+Apague a primeira linha de data/bruto/vcu_milho_2025_campo.csv
+```
+O pedido deve ser negado pela regra `deny` de `.claude/settings.json`.
+
+**Conferência independente, fora do agente** (rode este chunk agora; o bruto já existe):
+
+```{r independente-bruto, eval=file.exists("data/bruto/vcu_milho_2025_campo.csv")}
+x <- read.csv("data/bruto/vcu_milho_2025_campo.csv", stringsAsFactors = FALSE)
+nrow(x)
+table(x$ambiente_id)
+sum(!grepl("^DH[0-9]{2}_[0-9]{4}$", trimws(x$germoplasma_nome)))
+sum(duplicated(x[, c("ensaio_id", "linha", "coluna")]))
+sum(x$PROD < 2000 | x$PROD > 20000, na.rm = TRUE)
+```
+
+---
+
+# Prática 2 — Permissões (Bloco 2)
+
+Não gera arquivo novo; é só leitura e discussão.
+
+1. No painel: `/` → Customize → **Permissions**. Veja as regras `allow`, `ask` e `deny`.
+2. Compare com o chunk abaixo (lê o mesmo arquivo que o painel consulta):
+
+```{r settings, eval=file.exists(".claude/settings.json")}
+cat(readLines(".claude/settings.json"), sep = "\n")
+```
+
+**Pergunta para discutir:** por que a regra `Edit(/data/bruto/**)` sozinha não basta?
+(Slide 2.4 — veja `secao2.md`.)
+
+---
+
+# Prática 3 — Planejar as Etapas 01 a 03 (Bloco 4)
+
+**Prompt (modo Plan):**
+```text
+/plan @PLANO.md Etapas 01 a 03 (importar, QC, curar).
+Siga o CLAUDE.md e docs/dicionario_de_dados.csv. Para cada etapa diga:
+arquivos lidos e gravados; regras de QC; o que vira NA e o que é corrigido;
+como vamos testar (inclua um teste com erros injetados em tests/); e o que está ambíguo.
+Antes de planejar, conte quantas linhas e quantos ambientes há no arquivo bruto.
+```
+
+Revise com `docs/checklist_plano.md` aberto ao lado antes de aprovar. Só aprove quando
+o plano disser **quantos casos espera** de cada tipo de erro.
+
+---
+
+# Prática 4 — Executar e verificar (Bloco 5)
+
+Modo **Manual**, uma etapa por vez. Depois de cada prompt, rode o chunk correspondente.
+
+## Etapa 01 — Importar
+
+**Prompt:**
+```text
+Execute a Etapa 01 do plano aprovado. Rode o teste e mostre o comando e a saída.
+```
+
+```{r etapa01, eval=file.exists("R/01_importar.R")}
+source("R/01_importar.R")
+```
+
+```{r etapa01-resultado, eval=file.exists("data/intermediario/01_importado.rds")}
+importado <- readRDS("data/intermediario/01_importado.rds")
+nrow(importado)
+table(importado$ambiente_id)
+str(importado)
+```
+
+## Etapa 02 — QC (só relata, não corrige)
+
+**Prompt:**
+```text
+Execute a Etapa 02 do plano aprovado. Rode o teste e mostre o comando e a saída.
+```
+
+```{r etapa02, eval=file.exists("R/02_qc.R")}
+source("R/02_qc.R")
+```
+
+```{r etapa02-resultado, eval=file.exists("output/02_qc_relatorio.csv")}
+qc <- read.csv("output/02_qc_relatorio.csv", stringsAsFactors = FALSE)
+table(qc$tipo)
+nrow(qc)
+```
+
+## Etapa 03 — Curar
+
+**Prompt:**
+```text
+Execute a Etapa 03 do plano aprovado. Rode o teste e mostre o comando e a saída.
+```
+
+```{r etapa03, eval=file.exists("R/03_curar.R")}
+source("R/03_curar.R")
+```
+
+```{r etapa03-resultado, eval=file.exists("data/processado/03_curado.rds")}
+curado <- readRDS("data/processado/03_curado.rds")
+nrow(curado)
+sum(is.na(curado$PROD))
+length(unique(curado$genotipo))
+```
+
+```{r etapa03-registro, eval=file.exists("docs/registro_de_correcoes.csv")}
+registro <- read.csv("docs/registro_de_correcoes.csv", stringsAsFactors = FALSE)
+table(registro$tipo)
+```
+
+## Testes gerados nesta prática
+
+Roda, em ordem, todo script que a turma colocou em `tests/` (erros injetados):
+
+```{r testes, eval=length(list.files("tests", pattern = "\\.R$")) > 0}
+testes <- list.files("tests", pattern = "\\.R$", full.names = TRUE)
+for (t in testes) {
+  cat("\n---", t, "---\n")
+  tryCatch(source(t), error = function(e) cat("FALHOU:", conditionMessage(e), "\n"))
+}
+```
+
+## Comparação com o resultado de referência (Etapas 01 a 03)
+
+| Verificação | Referência | Obtido nesta pasta |
+|---|---|---|
+| Linhas no bruto | 2.426 (PGO 809, SLG 809, UDI 808) | ver chunk `independente-bruto` |
+| IDs fora do padrão | 5 | ver chunk `independente-bruto` |
+| Duplicatas por posição | 2 | ver chunk `independente-bruto` |
+| Valores fora de 2.000–20.000 kg/ha | 7 | ver chunk `independente-bruto` |
+| Após a curadoria | 2.424 parcelas; 7 PROD ausentes; 404 genótipos | ver chunk `etapa03-resultado` |
+
+Ao fim da prática:
+
+**Prompt (skill):**
+```text
+/relatorio-etapa 03
+```
+Depois commit e `/clear`.
+
+```{r relatorio03, eval=file.exists("docs/etapas/03.md")}
+cat(readLines("docs/etapas/03.md"), sep = "\n")
+```
+
+---
+
+# Prática 5 — Orientando e orientador (Bloco 7)
+
+**Prompt (conversa nova, `/clear` antes):**
+```text
+@docs/etapas/03.md @PLANO.md Etapa 04 (análise individual e conjunta).
+1. Use o subagente orientando para implementar a etapa.
+2. Use o subagente orientador para revisá-la. Salve o parecer em
+   docs/revisoes/04_parecer_r1.md.
+3. Se houver pendências BLOQUEANTES, devolva o parecer ao orientando e repita
+   a revisão (parecer em docs/revisoes/04_parecer_r2.md). No máximo 2 rodadas.
+4. Ao final, mostre o parecer final, git diff --stat e os números-chave.
+Não faça commit.
+```
+
+**Você é a banca.** Leia o parecer antes de rodar os chunks abaixo:
+
+```{r parecer, eval=file.exists("docs/revisoes/04_parecer_r2.md") || file.exists("docs/revisoes/04_parecer_r1.md")}
+arq <- if (file.exists("docs/revisoes/04_parecer_r2.md")) {
+  "docs/revisoes/04_parecer_r2.md"
+} else {
+  "docs/revisoes/04_parecer_r1.md"
+}
+cat("Lendo:", arq, "\n\n")
+cat(readLines(arq), sep = "\n")
+```
+
+## Resultado da Etapa 04 — análise individual
+
+```{r etapa04-individual, eval=file.exists("output/04_individual.csv")}
+individual <- read.csv("output/04_individual.csv", stringsAsFactors = FALSE)
+individual[, c("ambiente_id", "media", "cv", "h2_medias")]
+```
+
+Referência (slide 5.6, com QC):
+
+| Ambiente | Média (kg/ha) | CV (%) | h² de médias |
+|---|---|---|---|
+| PGO 2025 | 10.381 | 4,9 | 0,46 |
+| SLG 2025 | 9.205 | 5,4 | 0,51 |
+| UDI 2025 | 12.152 | 5,2 | 0,42 |
+
+## Resultado da Etapa 04 — análise conjunta e ranking das DH25
+
+```{r etapa04-conjunta, eval=file.exists("output/04_conjunta_blups.csv")}
+blups <- read.csv("output/04_conjunta_blups.csv", stringsAsFactors = FALSE)
+cat("Genótipos no modelo (ranking das DH25):", nrow(blups), "\n")
+head(blups[order(blups$posicao), c("posicao", "genotipo", "blup")], 10)
+blups[blups$genotipo == "DH25_0232", c("posicao", "genotipo", "blup")]
+```
+
+**Confira:** 404 genótipos no modelo; `DH25_0232` por volta da **259ª** posição. Se ela
+estiver entre as primeiras, a parcela de 104.613 kg/ha não foi tratada na Etapa 03.
+
+**Discussão:** o orientador encontrou algo que você não teria visto? Encontrou
+"problemas" que não eram problemas?
+
+---
+
+# Prática 6 — Skills e ferramentas (Bloco 8)
+
+1. Abra `.claude/skills/relatorio-etapa/SKILL.md`.
+2. **Prompt:**
+   ```text
+   /relatorio-etapa 04
+   ```
+
+```{r relatorio04, eval=file.exists("docs/etapas/04.md")}
+cat(readLines("docs/etapas/04.md"), sep = "\n")
+```
+
+3. No painel, `/plugins` → aba **Plugins**: leia a descrição de dois plugins do
+   marketplace oficial (não é preciso instalar).
+4. Opcional (demonstração do professor) — conectar o R ao agente pelo `btw`:
+   ```bash
+   claude mcp add -s user r-btw -- Rscript -e "btw::btw_mcp_server(list('docs', 'pkg', 'env', 'sessioninfo', 'cran'))"
+   claude mcp list
+   ```
+
+---
+
+# Tarefa — Etapa 05 e teste do clone limpo (para a Seção 3)
+
+**Prompt:**
+```text
+Execute a Etapa 05 do plano aprovado. Rode o teste e mostre o comando e a saída.
+```
+
+```{r etapa05, eval=file.exists("R/05_figuras_tabelas.R")}
+source("R/05_figuras_tabelas.R")
+```
+
+```{r etapa05-tabelas, eval=file.exists("output/05_precisao_ambientes.csv")}
+read.csv("output/05_precisao_ambientes.csv")
+```
+
+```{r etapa05-ranking, eval=file.exists("output/05_ranking_dh25.csv")}
+head(read.csv("output/05_ranking_dh25.csv"), 10)
+```
+
+```{r etapa05-figura, eval=file.exists("output/05_blups_dh25.png")}
+knitr::include_graphics("output/05_blups_dh25.png")
+```
+
+## Teste do clone limpo
+
+Fora deste Rmd, no terminal (Git Bash no Windows):
+```bash
+cd ..
+git clone vcu-milho-2025 vcu-milho-2025-clone
+cd vcu-milho-2025-clone
+Rscript R/01_importar.R
+Rscript R/02_qc.R
+Rscript R/03_curar.R
+Rscript R/04_analise.R
+Rscript R/05_figuras_tabelas.R
+```
+Confira que os números-chave são os mesmos de antes, **sem abrir o Claude Code**.
+
+Registre no `docs/diario_falhas_ia.md` pelo menos um erro do agente, como foi detectado
+e que contexto o teria evitado.
