@@ -1,0 +1,479 @@
+# Parâmetros do experimento de simulação — Meuwissen, Hayes & Goddard (2001)
+# Genetics 157:1819–1829 (April 2001)
+# Cada parâmetro tem: valor, unidade, fonte (página/tabela), status (informado | suposto)
+# status: "informado"  → valor explícito no artigo
+# status: "suposto"    → valor não consta; campo valor: null; nota justifica
+
+# ---------------------------------------------------------------------------
+# GENOMA
+# ---------------------------------------------------------------------------
+genoma:
+  n_cromossomos:
+    valor: 10
+    unidade: cromossomos
+    fonte: "Métodos — Simulated data, p. 1820; Tabela 1, p. 1821"
+    status: informado
+
+  tamanho_por_cromossomo:
+    valor: 100
+    unidade: cM
+    fonte: "Métodos — Simulated data, p. 1820; Tabela 1 ('10 chromosomes of 100 cM each')"
+    status: informado
+
+  tamanho_total_genoma:
+    valor: 1000
+    unidade: cM
+    fonte: "Abstract, p. 1819 ('A genome of 1000 cM was simulated')"
+    status: informado
+
+  espaco_entre_marcadores:
+    valor: 1
+    unidade: cM
+    fonte: "Abstract, p. 1819; Métodos, p. 1820"
+    status: informado
+
+  n_marcadores_por_cromossomo:
+    valor: 101
+    unidade: loci
+    fonte: "Métodos, p. 1820 ('there were 101 marker loci per chromosome')"
+    status: informado
+
+  n_marcadores_total:
+    valor: 1010
+    unidade: loci
+    fonte: "Métodos, p. 1821 ('genotyped for 1010 (= 10 × 101) marker loci')"
+    status: informado
+
+  posicao_marcadores_no_segmento:
+    valor: "início e fim de cada cM"
+    unidade: posição relativa
+    fonte: "Métodos, p. 1820 ('at the beginning and end of every centimorgan')"
+    status: informado
+
+  distancia_marcador_qtl:
+    valor: 0.5
+    unidade: cM
+    fonte: "Métodos, p. 1820 ('every QTL was flanked by two marker loci at a distance of 0.5 cM')"
+    status: informado
+
+  n_posicoes_qtl_por_cromossomo:
+    valor: 100
+    unidade: posições potenciais (meio de cada cM)
+    fonte: "Métodos, p. 1820 ('In the middle of each centimorgan, there was a QTL')"
+    status: informado
+
+  n_posicoes_qtl_total:
+    valor: 1000
+    unidade: posições potenciais
+    fonte: "Métodos, p. 1820 ('since there are 1000 QTL' — referindo-se às posições potenciais)"
+    status: informado
+
+  n_haplotipos_por_segmento:
+    valor: ~50
+    unidade: haplótipos distintos por segmento de 1 cM (média)
+    fonte: "Métodos, p. 1821 ('on average ~50 different haplotypes per 1-cM segment')"
+    status: informado
+
+  n_haplotipos_total:
+    valor: ~50000
+    unidade: efeitos de haplótipos a estimar
+    fonte: "Abstract, p. 1819; Métodos, p. 1821"
+    status: informado
+
+# ---------------------------------------------------------------------------
+# ESTRUTURA POPULACIONAL
+# ---------------------------------------------------------------------------
+populacao:
+  Ne_burnin:
+    valor: 100
+    unidade: indivíduos (tamanho efetivo = tamanho real — população ideal)
+    fonte: "Métodos, p. 1820–1821; Tabela 1"
+    status: informado
+
+  n_geracoes_burnin:
+    valor: 1000
+    unidade: gerações
+    fonte: "Métodos, p. 1821 ('simulated for 1000 generations at an effective size of 100')"
+    status: informado
+
+  estrutura_burnin:
+    valor: "ideal (panmítica, sem seleção, appariamento aleatório)"
+    unidade: tipo de estrutura
+    fonte: "Tabela 1, nota b, p. 1821"
+    status: informado
+
+  N_geracao_1001:
+    valor: 200
+    unidade: indivíduos (100 machos + 100 fêmeas)
+    fonte: "Métodos, p. 1821; Tabela 1"
+    status: informado
+
+  estrutura_geracao_1001:
+    valor: "ideal (panmítica)"
+    unidade: tipo de estrutura
+    fonte: "Tabela 1, p. 1821"
+    status: informado
+
+  N_geracao_1002:
+    valor: 2000
+    unidade: indivíduos
+    fonte: "Métodos, p. 1821; Tabela 1"
+    status: informado
+
+  estrutura_geracao_1002:
+    valor: "20 famílias de meios-irmãos paternos, 100 indivíduos cada"
+    unidade: tipo de estrutura
+    fonte: "Métodos, p. 1821; Tabela 1 ('20 half-sib families of size 100 each')"
+    status: informado
+
+  N_geracao_1003:
+    valor: 2000
+    unidade: candidatos à seleção (sem fenótipo)
+    fonte: "Métodos, p. 1821; Tabela 1"
+    status: informado
+
+  estrutura_geracao_1003:
+    valor: "ideal (panmítica, Ne = 2000)"
+    unidade: tipo de estrutura
+    fonte: "Tabela 1, p. 1821"
+    status: informado
+
+  geracoes_genotipadas:
+    valor: "1001 e posteriores"
+    unidade: gerações
+    fonte: "Tabela 1, p. 1821 ('Marker genotyping: Generations 1001 and later')"
+    status: informado
+
+  geracoes_fenotipadas:
+    valor: "1001 e 1002"
+    unidade: gerações
+    fonte: "Tabela 1, p. 1821; Métodos, p. 1821"
+    status: informado
+
+  n_registros_fenotipicos_total:
+    valor: 2200
+    unidade: registros
+    fonte: "Métodos, p. 1821 ('consisted of 200 and 2000 marker-genotyped and recorded animals')"
+    status: informado
+
+  fase_de_ligacao_conhecida:
+    valor: true
+    unidade: booleano (assumido sem erro)
+    fonte: "Métodos, p. 1821 ('assumed that the linkage phases of the tightly linked markers
+            were known without error')"
+    status: informado
+
+# ---------------------------------------------------------------------------
+# QTL
+# ---------------------------------------------------------------------------
+qtl:
+  taxa_mutacao:
+    valor: 2.5e-5
+    unidade: por locus por geração
+    fonte: "Métodos, p. 1820; Tabela 1"
+    status: informado
+
+  taxa_mutacao_genoma_haploide:
+    valor: 2.5e-2
+    unidade: por genoma haploide por geração (= 1000 × 2.5e-5)
+    fonte: "Métodos, p. 1820"
+    status: informado
+
+  distribuicao_efeitos_mutacionais:
+    valor: "Gamma(escala=1.66, forma=0.4)"
+    unidade: efeitos aditivos (adimensional)
+    fonte: "Métodos, p. 1820–1821; Tabela 1 ('Gamma(1.66; 0.4)')"
+    status: informado
+
+  parametro_forma_gamma:
+    valor: 0.4
+    unidade: adimensional
+    fonte: "Métodos, p. 1820 ('shape parameter β = 0.4 — Hayes and Goddard 2000')"
+    status: informado
+
+  parametro_escala_gamma:
+    valor: 1.66
+    unidade: adimensional
+    fonte: "Métodos, p. 1821 ('scale parameter was arbitrarily set to 1.66, which resulted
+            in a genetic variance of 1')"
+    status: informado
+
+  sinal_efeito:
+    valor: "±1 com probabilidade 0.5 cada"
+    unidade: distribuição do sinal
+    fonte: "Métodos, p. 1820 ('the sign of the QTL effect is sampled to be positive or
+            negative with probability 0.5')"
+    status: informado
+
+  dominancia:
+    valor: 0
+    unidade: adimensional
+    fonte: "Métodos, p. 1820; Tabela 1 ('Dominance of QTL effects: 0')"
+    status: informado
+
+  segundo_momento_efeito_a1:
+    valor: 0.203
+    unidade: unidades de variância (E[a₁²])
+    fonte: "Appendix, p. 1829"
+    status: informado
+
+  E_a2:
+    valor: 0.102
+    unidade: unidades de variância (E[a²] = 0.5 × E[a₁²])
+    fonte: "Appendix, p. 1829"
+    status: informado
+
+  variancia_mutacional_por_geracao:
+    valor: 5.0e-3
+    unidade: unidades da variância ambiental por geração
+    fonte: "Métodos, p. 1821 ('σ²_m = 1000 × m × E(a²) = 5 × 10⁻³')"
+    status: informado
+
+# ---------------------------------------------------------------------------
+# MARCADORES
+# ---------------------------------------------------------------------------
+marcadores:
+  taxa_mutacao:
+    valor: 2.5e-3
+    unidade: por locus por geração
+    fonte: "Métodos, p. 1821; Tabela 1"
+    status: informado
+
+  modelo_mutacao:
+    valor: "infinite alleles — cada mutação cria um alelo único novo"
+    unidade: tipo de modelo
+    fonte: "Métodos, p. 1821 ('every mutation at a marker locus resulted in a new unique
+            marker allele')"
+    status: informado
+
+  multialelicoidade:
+    valor: true
+    unidade: booleano
+    fonte: "Métodos, p. 1821 ('many marker loci were multiallelic')"
+    status: informado
+
+  heterozigosidade_media_marcadores:
+    valor: ~0.50
+    unidade: proporção
+    fonte: "Discussion, p. 1826 ('the heterozygosity of markers was ~50%')"
+    status: informado
+
+# ---------------------------------------------------------------------------
+# PARÂMETROS GENÉTICO-QUANTITATIVOS
+# ---------------------------------------------------------------------------
+genetica_quantitativa:
+  Vg:
+    valor: 1.0
+    unidade: unidades arbitrárias
+    fonte: "Métodos, p. 1821 ('resulted in a genetic variance of 1')"
+    status: informado
+
+  Ve:
+    valor: 1.0
+    unidade: unidades arbitrárias
+    fonte: "Métodos, p. 1821 ('environmental variance was also assumed to be 1')"
+    status: informado
+
+  h2:
+    valor: 0.5
+    unidade: adimensional
+    fonte: "Métodos, p. 1821 ('heritability was 0.5')"
+    status: informado
+
+  E_Vgi:
+    valor: 0.001
+    unidade: variância genética por segmento (Vg / n_segmentos = 1/1000)
+    fonte: "Métodos — BLUP, p. 1822; Appendix, p. 1829 ('E(σ²_gi) = 0.102 × 0.0099 = 0.001')"
+    status: informado
+
+  E_H_qtl:
+    valor: 0.0099
+    unidade: heterozigosidade esperada dos QTL (incondicional)
+    fonte: "Appendix, p. 1829 ('E(H) = 4Nem/(4Nem + 1) = 0.0099')"
+    status: informado
+
+  E_H_qtl_dado_segregando:
+    valor: 0.1889
+    unidade: heterozigosidade esperada dado QTL segregante
+    fonte: "Appendix, p. 1829 ('E(H|s=1) = 1/ln(2Ne − 1) = 0.1889')"
+    status: informado
+
+  proporcao_qtl_nao_segregantes:
+    valor: 0.947
+    unidade: proporção (π)
+    fonte: "Appendix, p. 1829; Methods — BayesB, p. 1822 ('π = 1 − 0.0099/0.1889 = 0.947')"
+    status: informado
+
+# ---------------------------------------------------------------------------
+# BLUP — parâmetros do modelo
+# ---------------------------------------------------------------------------
+blup:
+  variancia_por_segmento:
+    valor: 0.001
+    unidade: E(σ²_gi) = Vg / n_segmentos
+    fonte: "Métodos — BLUP, p. 1822 ('E(σ²_gi) = 0.001 — see appendix')"
+    status: informado
+
+  variancia_residual:
+    valor: 1.0
+    unidade: Ve (igual ao valor verdadeiro)
+    fonte: "Métodos — BLUP, p. 1822 ('error variance is set equal to its true value of 1')"
+    status: informado
+
+# ---------------------------------------------------------------------------
+# BayesA — hiperparâmetros da priori
+# ---------------------------------------------------------------------------
+bayesA:
+  distribuicao_priori:
+    valor: "qui-quadrado invertida escalonada χ⁻²(ν, S)"
+    unidade: tipo
+    fonte: "Métodos — BayesA, p. 1822"
+    status: informado
+
+  nu:
+    valor: 4.012
+    unidade: graus de liberdade da priori
+    fonte: "Métodos — BayesA, p. 1822"
+    status: informado
+
+  S:
+    valor: 0.0020
+    unidade: parâmetro de escala
+    fonte: "Métodos — BayesA, p. 1822"
+    status: informado
+
+  media_sigma2_gi:
+    valor: 0.001
+    unidade: média da priori de σ²_gi
+    fonte: "Métodos — BayesA, p. 1822 ('mean ... of σ²_gi are 0.001')"
+    status: informado
+
+  variancia_sigma2_gi:
+    valor: 1.675e-4
+    unidade: variância da priori de σ²_gi
+    fonte: "Métodos — BayesA, p. 1822 ('variance ... 1.675 × 10⁻⁴')"
+    status: informado
+
+  priori_Ve:
+    valor: "χ⁻²(−2, 0) — priori uniforme (flat)"
+    unidade: tipo
+    fonte: "Métodos — BayesA, p. 1822"
+    status: informado
+
+  ciclos_mcmc:
+    valor: 10000
+    unidade: ciclos
+    fonte: "Métodos — BayesA, p. 1822"
+    status: informado
+
+  burn_in:
+    valor: 1000
+    unidade: ciclos descartados
+    fonte: "Métodos — BayesA, p. 1822 ('first 1000 cycles were discarded as burn in')"
+    status: informado
+
+# ---------------------------------------------------------------------------
+# BayesB — hiperparâmetros da priori
+# ---------------------------------------------------------------------------
+bayesB:
+  distribuicao_priori:
+    valor: "mista: π × δ(0) + (1−π) × χ⁻²(ν, S)"
+    unidade: tipo
+    fonte: "Métodos — BayesB, p. 1822"
+    status: informado
+
+  pi:
+    valor: 0.947
+    unidade: probabilidade de σ²_gi = 0 (locus não segregante)
+    fonte: "Appendix, p. 1829; Methods — BayesB, p. 1822"
+    status: informado
+
+  nu:
+    valor: 4.234
+    unidade: graus de liberdade (dado σ²_gi > 0)
+    fonte: "Métodos — BayesB, p. 1822 ('ν = 4.234')"
+    status: informado
+
+  S:
+    valor: 0.0429
+    unidade: parâmetro de escala (dado σ²_gi > 0)
+    fonte: "Métodos — BayesB, p. 1822 ('S = 0.0429')"
+    status: informado
+
+  algoritmo_sigma2:
+    valor: "Metropolis-Hastings (100 ciclos por passo)"
+    unidade: tipo
+    fonte: "Métodos — BayesB, p. 1823"
+    status: informado
+
+  ciclos_mcmc:
+    valor: 10000
+    unidade: ciclos
+    fonte: "Métodos — BayesB, p. 1823"
+    status: informado
+
+  burn_in:
+    valor: 1000
+    unidade: ciclos descartados
+    fonte: "Métodos — BayesB, p. 1823 ('first 1000 cycles were discarded as burn in')"
+    status: informado
+
+# ---------------------------------------------------------------------------
+# LS — parâmetros do modelo por etapas
+# ---------------------------------------------------------------------------
+ls:
+  criterio_pico_loglik:
+    valor: 14
+    unidade: unidades de log-likelihood natural (equivalente a LOD 6)
+    fonte: "Métodos — LS, p. 1821 ('log-likelihood in the valleys was at least 14 units lower')"
+    status: informado
+
+  lod_equivalente:
+    valor: 6
+    unidade: LOD score
+    fonte: "Métodos — LS, p. 1821 ('natural log equivalent to a LOD score of 6 units')"
+    status: informado
+
+  justificativa_lod6:
+    valor: "LOD 3 convencional gerava muitos efeitos para estimação simultânea"
+    unidade: nota
+    fonte: "Métodos — LS, p. 1821"
+    status: informado
+
+# ---------------------------------------------------------------------------
+# REPLICAÇÕES E SEMENTE
+# ---------------------------------------------------------------------------
+reproducibilidade:
+  n_repeticoes:
+    valor: 5
+    unidade: replicações independentes
+    fonte: "Tabela 2, p. 1824 ('Mean of five replicated simulations, except for BayesA
+            which is based on one replicate')"
+    status: informado
+    nota: "O texto da seção Methods não menciona explicitamente 5 replicações;
+           o número emerge da nota de rodapé da Tabela 2."
+
+  n_repeticoes_bayesA:
+    valor: 1
+    unidade: replicações
+    fonte: "Tabela 2, p. 1824"
+    status: informado
+    nota: "BayesA foi computacionalmente proibitivo (~2 semanas por réplica em Pentium 500);
+           os autores o avaliaram apenas na réplica 1."
+
+  semente_aleatoria:
+    valor: null
+    unidade: semente RNG
+    fonte: null
+    status: suposto
+    nota: "O artigo não informa a semente usada na simulação. Não é possível
+           reproduzir exatamente os mesmos dados sem essa informação."
+
+  software_simulacao:
+    valor: null
+    unidade: nome/versão do software
+    fonte: null
+    status: suposto
+    nota: "O artigo não nomeia o software ou linguagem usada para a simulação.
+           A técnica 'iteration on the data' (Schaeffer & Kennedy 1986) é mencionada,
+           mas não o ambiente computacional além de 'Pentium 500 PC'."

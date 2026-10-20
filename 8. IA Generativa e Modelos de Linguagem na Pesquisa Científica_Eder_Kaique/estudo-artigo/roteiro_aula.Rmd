@@ -1,0 +1,365 @@
+---
+title: "Estudar e reproduzir um artigo com Claude Code"
+subtitle: "Meuwissen, Hayes & Goddard (2001) · Seleção Genômica"
+author: "FIT 796 — UFV · Novembro 2026"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    theme: flatly
+    highlight: tango
+    number_sections: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+---
+
+## Cronograma (2 horas)
+
+| Etapa | Conteúdo | Tempo |
+|-------|----------|-------|
+| 0 | Estudar, não terceirizar | 10 min |
+| 1 | Projeto de estudo | 15 min |
+| 2 | Leitura em camadas | 30 min |
+| 3 | Perguntas e modo socrático | 20 min |
+| 4 | Modelo mínimo | 30 min |
+| Fechamento | Relatório e checklist | 15 min |
+
+**Artigo:** Meuwissen, T. H. E., Hayes, B. J., & Goddard, M. E. (2001). Prediction of Total Genetic Value Using Genome-Wide Dense Marker Maps. *Genetics*, 157, 1819–1829.
+
+---
+
+# Etapa 0 — Estudar, não terceirizar (10 min)
+
+## O experimento de abertura
+
+Antes de colocar o PDF na pasta, peça ao Claude Code (em uma sessão nova):
+
+```
+Resuma o artigo de Meuwissen, Hayes e Goddard sobre predição de valor genético
+com mapas de marcadores densos.
+```
+
+Discuta com o grupo:
+
+- O agente leu o artigo ou reconstruiu o tema com base no treinamento?
+- Os números citados (acurácias, tamanho do genoma, Ne) estão no artigo? Em qual página?
+- Ele confundiu com outros trabalhos dos mesmos autores sobre seleção genômica?
+
+> **Ponto central:** sem o PDF no contexto, a resposta é uma reconstrução plausível.
+> Com autores prolíficos no mesmo tema, a confusão entre artigos é especialmente provável.
+
+## Três modos de uso
+
+| Modo | Pedido típico | Resultado para o aluno |
+|------|---------------|------------------------|
+| Terceirizar | "Resuma o artigo" | Sabe repetir frases; não sabe explicar |
+| Consultar | "O que é BayesB?" | Entende pedaços isolados |
+| Estudar | "Faça perguntas até eu explicar a Tabela 2" | Constrói entendimento e detecta lacunas |
+
+## Regras do estudo (obrigatórias)
+
+1. Toda afirmação tem **seção, página, figura ou tabela**.
+2. Rótulos explícitos: **[ARTIGO]**, **[INFERÊNCIA]**, **[CONHECIMENTO GERAL]**.
+3. Informação ausente → **"NÃO CONSTA NO ARTIGO"**, não uma estimativa.
+4. Entendimento aceito apenas quando **reproduz um número**.
+
+---
+
+# Etapa 1 — Projeto de estudo (15 min)
+
+## Estrutura do repositório
+
+```
+estudo-artigo/
+├── CLAUDE.md                       # regras de estudo e reprodução
+├── PLANO.md                        # etapas e critérios de aceitação
+├── artigo/
+│   └── Meuwissen_Hayes_Goddard_GS.pdf
+├── notas/
+│   ├── 01_mapa_do_artigo.md
+│   ├── 02_glossario.md
+│   ├── 03_perguntas.md
+│   └── 04_critica.md
+├── config/
+│   └── parametros_artigo.yaml      # cada parâmetro com fonte e status
+├── R/
+│   └── 10_modelo_minimo.R
+├── DESVIOS.md
+└── REPRODUTIBILIDADE.md
+```
+
+## Iniciando o Claude Code
+
+```bash
+cd estudo-artigo
+claude
+```
+
+O `CLAUDE.md` já contém as regras de estudo — verifique que está correto antes de continuar.
+
+> **Os rótulos [ARTIGO] / [INFERÊNCIA] / [CONHECIMENTO GERAL] são a principal
+> defesa contra a alucinação plausível.** Eles transformam uma resposta fluente
+> em uma resposta auditável.
+
+---
+
+# Etapa 2 — Leitura em camadas (30 min)
+
+## Camada 1 — Mapa do artigo
+
+Cole este prompt no Claude Code:
+
+```
+Leia artigo/Meuwissen_Hayes_Goddard_GS.pdf por completo.
+Seguindo as regras do CLAUDE.md, escreva notas/01_mapa_do_artigo.md com:
+1. A pergunta científica central, em uma frase.
+2. O problema técnico que motivou o artigo (graus de liberdade).
+3. Os quatro métodos comparados (nomes exatos do artigo).
+4. A métrica principal de resultado e como ela é calculada.
+5. As quatro conclusões numeradas dos autores, cada uma com a figura
+   ou tabela que a sustenta.
+Use os rótulos [ARTIGO] e [INFERÊNCIA] e indique as páginas.
+```
+
+**O que fazer em seguida:** abra o PDF nas páginas citadas e confira pelo menos
+3 afirmações. Essa verificação por amostragem é obrigatória.
+
+## Camada 2 — Glossário operacional
+
+```
+Crie notas/02_glossario.md com os termos técnicos do artigo.
+Para cada termo: definição dada pelo artigo (com página), definição usual
+na literatura [CONHECIMENTO GERAL] e, quando houver diferença, destaque-a.
+```
+
+Termos obrigatórios para o artigo de Meuwissen et al.:
+
+- **haplótipo de marcadores** — o que é, como é formado (p. 1820)
+- **desequilíbrio de ligação (LD)** — por que Ne = 100 o gera
+- **acurácia da predição** (r_TBV,EBV) — como difere de h²
+- **encolhimento** (*shrinkage*) — por que BLUP encolhe mais que LS
+- **priori** e distribuição qui-quadrado invertida — o que ela controla em BayesA
+- **BayesA vs BayesB** — qual é a diferença na priori e por que BayesB é mais preciso
+- **amostragem de Gibbs** — o que é um "ciclo" no artigo
+- **coeficiente de regressão b** — por que b < 1 indica inflação dos EBVs
+
+> "Acurácia" pode significar acurácia da predição genômica (r) ou precisão da
+> estimativa dos efeitos. O glossário obriga a fixar o sentido antes de
+> interpretar resultados.
+
+## Camada 3 — Extração dos parâmetros
+
+```
+Extraia para config/parametros_artigo.yaml TODOS os parâmetros da simulação
+do artigo (Métodos, p. 1820–1823). Para cada parâmetro:
+  valor, unidade, fonte (página/tabela), e status: "informado" ou "suposto".
+Se o valor não estiver no artigo, deixe status: "suposto", valor: null
+e uma nota explicando o que falta.
+```
+
+> Esta é a etapa onde mais aparecem parâmetros "inventados".
+> Um YAML com fonte em cada linha torna a invenção visível.
+
+## Camada 4 — Tabela 2 em detalhe
+
+```
+Para a Tabela 2 (p. 1824) do artigo:
+1. O que são as colunas "b" e "r"? Qual a diferença entre elas?
+2. Por que b << 1 para LS e b ≈ 1 para BayesB?
+3. Que número eu deveria conseguir reproduzir a partir desta tabela?
+Não interprete além do que o artigo afirma sem usar [INFERÊNCIA].
+```
+
+---
+
+# Etapa 3 — Perguntas e crítica (20 min)
+
+## O aluno pergunta
+
+Tente responder antes de pedir ao agente. Depois confira com o artigo:
+
+1. Por que não é possível usar mínimos quadrados com ~50.000 haplótipos e 2.200 fenótipos?
+2. Como o BLUP contorna esse problema? Qual premissa ele impõe implicitamente?
+3. Qual a diferença entre BayesA e BayesB? Por que BayesB é mais preciso?
+4. O que a diferença entre acurácia 0,32 (LS) e 0,85 (BayesB) significa na prática para o melhoramento?
+5. Por que a acurácia cai ao longo das gerações (Tabela 5)? O que isso implica para a atualização do painel?
+
+**Regra:** toda resposta vem com fonte ou "NÃO CONSTA NO ARTIGO".
+
+## Modo socrático — o agente pergunta
+
+```
+Aja como examinador de qualificação em genética quantitativa.
+Faça-me uma pergunta por vez sobre o artigo de Meuwissen et al. (2001),
+começando pelo problema dos graus de liberdade e aumentando a dificuldade.
+Espere minha resposta, avalie-a com base no artigo (com página) e só então avance.
+Ao final, liste os pontos que eu ainda não domino.
+Registre as perguntas e avaliações em notas/03_perguntas.md.
+```
+
+> Explicar é a forma mais rápida de descobrir o que ainda não se entendeu.
+> O agente passa de fonte de respostas para instrumento de diagnóstico.
+
+---
+
+# Etapa 4 — Modelo mínimo (30 min)
+
+## Construindo o modelo com Claude Code
+
+Nesta etapa você **não vai copiar código pronto**: vai construí-lo com o
+agente, um bloco de cada vez, checando cada resultado antes de avançar.
+
+O objetivo não é reproduzir os números exatos do artigo, mas observar o
+**mesmo padrão**: LS inflado (b << 1, r baixo) vs RR-BLUP encolhido
+(b ≈ 1, r maior).
+
+---
+
+### Passo 1 — Gabarito teórico (peça ao agente calcular, não ao R ainda)
+
+Antes de qualquer código, use este prompt para fixar as expectativas:
+
+```
+Quero dois cálculos teóricos simples em R, sem simulação.
+
+1. Razão observações/parâmetros do artigo de Meuwissen et al. (2001):
+   - n_fenotipicos = 2200  (gerações 1001 + 1002; artigo p. 1821)
+   - n_haplotipos  = 50000 (abstract)
+   Mostre o número e explique por que LS é insolúvel nesse regime.
+
+2. Equação do melhorista para ΔG/ano nos dois cenários do artigo:
+   - i = 1.4  (20% selecionados)
+   - r_conv = 0.70, L_conv = 5 anos  (seleção por progênies)
+   - r_gs   = 0.85 (BayesB, Tabela 2), L_gs = 1 ano  (artigo, Conclusão 4)
+   - sigma_g = 1.0  (Vg = 1 nos Métodos)
+   Mostre ΔG para cada cenário, a razão entre eles, e uma linha dizendo
+   qual padrão o modelo mínimo deve confirmar para ser coerente com o artigo.
+
+Use [ARTIGO] para valores do texto e [INFERÊNCIA] para deduções.
+```
+
+> **Antes de continuar:** confira os valores na p. 1821 e na Tabela 2.
+> A razão de ganho deve ser ~6x. Se divergir, revise o prompt.
+
+---
+
+### Passo 2 — Simulação mínima: LS vs RR-BLUP
+
+Com o gabarito em mãos, peça o código de simulação:
+
+```
+Crie o arquivo R/10_modelo_minimo.R com uma simulação reduzida de
+Meuwissen et al. (2001) que compare LS e RR-BLUP. Requisitos:
+
+Parâmetros (versão reduzida):
+  set.seed(2001)          # ano do artigo
+  n_ind     <- 200        # artigo usa 2200
+  n_train   <- 150
+  n_test    <- 50
+  n_markers <- 100        # artigo: ~50.000 haplótipos
+  n_qtl     <- 5          # ~5% com efeito real
+  h2        <- 0.5        # artigo, Métodos p. 1821
+
+Passos obrigatórios (em ordem, com comentário em cada bloco):
+  1. Simular matriz X de genótipos bialélicos (rbinom) e centralizar.
+  2. Definir beta_true com efeito apenas nos n_qtl marcadores sorteados;
+     normalizar para Vg = 1.
+  3. Gerar fenótipos com h2 = 0.5.
+  4. Particionar treino/teste.
+  5. Estimar com LS  (solve + crossprod).
+  6. Estimar com RR-BLUP; lambda = ((1-h2)/h2) * n_markers.
+  7. Calcular acurácia (cor) e coeficiente b (lm) para cada método.
+  8. Imprimir tabela comparando com os valores do artigo:
+       LS:     r_artigo = 0.318, b_artigo = 0.285  (Tabela 2, geração 1003)
+       RR-BLUP: r_artigo = 0.732
+
+Não adicione dependências externas; só base R.
+```
+
+---
+
+### Passo 3 — Figura de diagnóstico
+
+Após rodar e conferir a tabela, peça a figura:
+
+```
+Adicione ao final de R/10_modelo_minimo.R um bloco que gera dois
+scatter plots lado a lado (par(mfrow=c(1,2))):
+  - Eixo x: GEBV estimado; eixo y: valor genético verdadeiro.
+  - Linha vermelha: regressão observada (lm).
+  - Linha tracejada cinza: b = 1 ideal (abline(0, 1)).
+  - Título de cada painel: método, r e b formatados com sprintf.
+Só base R, sem ggplot2.
+```
+
+---
+
+### Checkpoint — responda antes de continuar
+
+1. A acurácia do RR-BLUP é maior do que a do LS? Por quê o encolhimento ajuda?
+2. O valor de `b` para LS está abaixo de 1 (EBVs inflados)?
+3. O padrão (LS < RR-BLUP) é coerente com a Tabela 2 do artigo?
+
+---
+
+### Passo 4 — Análise das diferenças
+
+```
+Com base no código em R/10_modelo_minimo.R e nos resultados da Tabela 2
+(p. 1824) do artigo:
+1. Por que a acurácia do RR-BLUP no modelo mínimo é diferente do valor
+   reportado no artigo (0.732)? Liste pelo menos três diferenças entre
+   o modelo mínimo e o experimento original.
+2. O que seria necessário alterar no código para aproximar os resultados?
+Use [ARTIGO] para o que o texto confirma e [INFERÊNCIA] para deduções.
+```
+
+---
+
+# Fechamento — Relatório (15 min)
+
+## Prompt de síntese
+
+```
+Escreva REPRODUTIBILIDADE.md com:
+1. Pergunta científica central do artigo (com página).
+2. O que o modelo mínimo reproduz e o que ele simplifica.
+3. Critérios de comparação: acurácia do RR-BLUP dentro de ±15% do valor
+   do artigo; padrão LS < BLUP < BayesB preservado.
+4. Desvios registrados (resumo de DESVIOS.md).
+5. O que o modelo mínimo ensinou sobre o mecanismo.
+6. Como executar do zero: dois comandos.
+```
+
+## Checklist do aluno
+
+- [ ] Consigo explicar a diferença entre LS, BLUP e BayesB em 2 minutos sem consultar notas.
+- [ ] Toda afirmação das minhas notas tem página, figura ou tabela do artigo.
+- [ ] Conferi manualmente pelo menos 3 afirmações do agente no PDF.
+- [ ] Sei por que o coeficiente `b` importa além da correlação `r`.
+- [ ] Meu modelo mínimo mostra acurácia maior para RR-BLUP do que para LS, ou sei explicar por que não.
+- [ ] Identifiquei pelo menos 2 premissas da simulação do artigo que podem não valer em um programa real.
+
+## Síntese da seção
+
+```
+Contexto controlado      →  PDF na pasta; rótulos [ARTIGO]/[INFERÊNCIA] no CLAUDE.md
+Leitura em camadas       →  mapa, glossário, parâmetros, tabela central
+Perguntas nos dois sentidos  →  aluno pergunta; agente examina (modo socrático)
+Entendimento testável    →  modelo mínimo + equação do melhorista como gabarito
+```
+
+> O agente não leu o artigo por você. Ele organizou a leitura, testou seu
+> entendimento e ajudou a transformar o texto em código verificável.
+
+## Tarefa para casa
+
+Aplicar o mesmo fluxo até a Etapa 4 com um artigo da sua própria área de pesquisa.
+Entregar o repositório com `notas/01_mapa_do_artigo.md`,
+`config/parametros_artigo.yaml` e o modelo mínimo rodando.
