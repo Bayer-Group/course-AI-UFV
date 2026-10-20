@@ -1,0 +1,69 @@
+# Fonte única de parâmetros do projeto. Nenhum script deve conter estes valores fixos.
+semente: 2026
+
+genoma:
+  n_fundadores: 100              # linhagens endogâmicas; metade em cada grupo heterótico
+  n_cromossomos: 10
+  seg_sites_por_cromossomo: 600
+  especie: MAIZE                 # histórico demográfico de milho no MaCS
+  geracoes_desde_divisao: 100    # divisão histórica entre os grupos heteróticos A e B
+  arquivo_fundadores: data/fundadores/fundadores_macs.rds  # versionado: runMacs não respeita set.seed
+
+carater:
+  nome: PROD                     # produtividade de grãos, kg/ha
+  qtl_por_cromossomo: 100
+  media_linhagens: 5000          # média genética das linhagens fundadoras (per se)
+  var_aditiva: 400000            # variância aditiva por ambiente na população fundadora
+  media_dominancia: 0.9          # grau médio de dominância (gera heterose)
+  var_dominancia: 0.2
+  cor_genetica_ambientes: 0.7    # gera interação G×E
+
+chip:
+  snp_por_cromossomo: 200        # 2.000 SNPs, sem sobreposição com QTLs
+
+# Cada ambiente é um local × ano. O valor genético de um local é o mesmo nos dois anos
+# (simplificação documentada em CLAUDE.md).
+ambientes:
+  - {ambiente_id: UDI_2024_V, local: Uberlandia,  sigla: UDI, ano: 2024, safra: verao, latitude: -18.92, longitude: -48.28, efeito: 0,    caracter_id: 1}
+  - {ambiente_id: SLG_2024_V, local: Sete Lagoas, sigla: SLG, ano: 2024, safra: verao, latitude: -19.47, longitude: -44.25, efeito: -800, caracter_id: 2}
+  - {ambiente_id: PGO_2024_V, local: Ponta Grossa, sigla: PGO, ano: 2024, safra: verao, latitude: -25.09, longitude: -50.16, efeito: 900, caracter_id: 3}
+  - {ambiente_id: UDI_2025_V, local: Uberlandia,  sigla: UDI, ano: 2025, safra: verao, latitude: -18.92, longitude: -48.28, efeito: 300,  caracter_id: 1}
+  - {ambiente_id: SLG_2025_V, local: Sete Lagoas, sigla: SLG, ano: 2025, safra: verao, latitude: -19.47, longitude: -44.25, efeito: -500, caracter_id: 2}
+  - {ambiente_id: PGO_2025_V, local: Ponta Grossa, sigla: PGO, ano: 2025, safra: verao, latitude: -25.09, longitude: -50.16, efeito: 600, caracter_id: 3}
+
+programa:
+  testadores: 1                  # um testador do grupo B; fenótipo = testcross
+  cruzamentos_por_coorte: 40
+  dh_por_cruzamento: 10
+  pais_coorte2: 40               # selecionados por média fenotípica de testcross
+  testemunhas_ano2: 4            # linhagens da coorte 1 repetidas em 2025
+  repeticoes: 2                  # blocos completos por ensaio (DBC)
+  colunas_por_bloco: 20
+  h2_parcela: 0.3                # herdabilidade de parcela dentro de ambiente
+  var_bloco: 40000
+
+erros_injetados:                 # simulam problemas reais de digitação e cadastro
+  parcelas_duplicadas: 5
+  ids_com_grafia_divergente: 8
+  valores_fora_do_intervalo: 10
+  genitor_inexistente: 3
+  linhagens_em_um_ambiente: 6
+
+banco:
+  arquivo: db/programa_milho.duckdb
+
+gs:
+  folds: 5
+  repeticoes_cv: 5
+
+cruzamentos:
+  n_candidatos: 30               # melhores GEBV da coorte mais recente
+  n_cruzamentos: 20
+  uso_max_por_genitor: 3
+  proporcao_selecionada: 0.10    # define a intensidade i do critério de utilidade
+  funcao_mapeamento: kosambi     # kosambi | haldane (ver comentário em R/06_cruzamentos.R)
+
+novo_ciclo:
+  dh_por_cruzamento: 10
+  ano: 2026
+  conjuntos_controle: 20         # realizações do plano e de cada controle (reduz o ruído de amostragem)

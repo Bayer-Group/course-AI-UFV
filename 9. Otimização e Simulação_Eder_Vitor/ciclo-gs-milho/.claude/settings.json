@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Rscript *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)"
+    ],
+    "deny": [
+      "Read(./data/gabarito/**)",
+      "Edit(./data/gabarito/**)",
+      "Edit(./data/fundadores/**)",
+      "Bash(rm *)",
+      "Bash(git push *)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "Rscript tests/run_rapidos.R >&2 || exit 2"
+          }
+        ]
+      }
+    ]
+  }
+}

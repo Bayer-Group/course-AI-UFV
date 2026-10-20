@@ -1,0 +1,14 @@
+# Banco e saídas geradas (reproduzíveis a partir dos scripts)
+db/*.duckdb
+db/*.duckdb.wal
+db/*.sqlite
+data/genotipos/
+data/gabarito/
+reports/
+# R
+.Rhistory
+.RData
+.Rproj.user/
+renv/library/
+# Claude Code: configurações pessoais
+.claude/settings.local.json
