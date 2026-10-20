@@ -184,7 +184,7 @@ for (t in testes) {
 | Linhas no bruto | 2.426 (PGO 809, SLG 809, UDI 808) | ver chunk `independente-bruto` |
 | IDs fora do padrão | 5 | ver chunk `independente-bruto` |
 | Duplicatas por posição | 2 | ver chunk `independente-bruto` |
-| Valores fora de 2.000–20.000 kg/ha | 7 | ver chunk `independente-bruto` |
+| Valores fora de 2.000-20.000 kg/ha | 7 | ver chunk `independente-bruto` |
 | Após a curadoria | 2.424 parcelas; 7 PROD ausentes; 404 genótipos | ver chunk `etapa03-resultado` |
 
 Ao fim da prática:
@@ -231,7 +231,7 @@ cat(readLines(arq), sep = "\n")
 
 ```{r etapa04-individual, eval=file.exists("output/04_individual.csv")}
 individual <- read.csv("output/04_individual.csv", stringsAsFactors = FALSE)
-individual[, c("ambiente_id", "media", "cv", "h2_medias")]
+individual[, c("ambiente", "media", "CV", "h2")]
 ```
 
 Referência (slide 5.6, com QC):
@@ -247,8 +247,8 @@ Referência (slide 5.6, com QC):
 ```{r etapa04-conjunta, eval=file.exists("output/04_conjunta_blups.csv")}
 blups <- read.csv("output/04_conjunta_blups.csv", stringsAsFactors = FALSE)
 cat("Genótipos no modelo (ranking das DH25):", nrow(blups), "\n")
-head(blups[order(blups$posicao), c("posicao", "genotipo", "blup")], 10)
-blups[blups$genotipo == "DH25_0232", c("posicao", "genotipo", "blup")]
+head(blups[order(blups$rank), c("rank", "genotipo", "blup")], 10)
+blups[blups$genotipo == "DH25_0232", c("rank", "genotipo", "blup")]
 ```
 
 **Confira:** 404 genótipos no modelo; `DH25_0232` por volta da **259ª** posição. Se ela
@@ -303,21 +303,3 @@ head(read.csv("output/05_ranking_dh25.csv"), 10)
 ```{r etapa05-figura, eval=file.exists("output/05_blups_dh25.png")}
 knitr::include_graphics("output/05_blups_dh25.png")
 ```
-
-## Teste do clone limpo
-
-Fora deste Rmd, no terminal (Git Bash no Windows):
-```bash
-cd ..
-git clone vcu-milho-2025 vcu-milho-2025-clone
-cd vcu-milho-2025-clone
-Rscript R/01_importar.R
-Rscript R/02_qc.R
-Rscript R/03_curar.R
-Rscript R/04_analise.R
-Rscript R/05_figuras_tabelas.R
-```
-Confira que os números-chave são os mesmos de antes, **sem abrir o Claude Code**.
-
-Registre no `docs/diario_falhas_ia.md` pelo menos um erro do agente, como foi detectado
-e que contexto o teria evitado.
