@@ -1,0 +1,2 @@
+codigo,descricao,unidade,metodo,escala,minimo,maximo,momento,codigos_ausentes,observacao
+PROD,Produtividade de grãos corrigida a 13% de umidade,kg/ha,Pesagem da parcela inteira e correção pela umidade medida na colheita,continua,2000,20000,colheita,vazio | 0 | -,Zero e hifen nao sao produtividade; viram NA

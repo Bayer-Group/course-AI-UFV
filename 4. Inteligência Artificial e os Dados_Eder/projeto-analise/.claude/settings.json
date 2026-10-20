@@ -1,0 +1,6 @@
+{
+  "permissions": {
+    "allow": ["Bash(Rscript *)"],
+    "deny": ["Edit(/data/bruto/**)", "Edit(/db/**)", "Bash(rm *)"]
+  }
+}

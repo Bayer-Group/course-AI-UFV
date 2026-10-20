@@ -1,0 +1,10 @@
+semente: 2026
+variavel: PROD
+unidade: kg/ha
+minimo: 2000
+maximo: 20000
+n_linhagens: 20
+n_blocos: 2
+delineamento: DBC
+ambientes: [UDI_2025_V, SLG_2025_V, PGO_2025_V]
+outlier_z: 3

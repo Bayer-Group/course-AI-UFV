@@ -1,0 +1,175 @@
+---
+title: "Aula prática — agentes para limpar e checar os dados"
+subtitle: "Depois do pptx Dados: a base de toda IA no melhoramento"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+lang: pt-BR
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+Aula de **45 minutos**, logo depois da apresentação. O objetivo é usar um agente (Cursor ou Claude Code) para achar problemas num caderno de campo, corrigir com registro e resumir a qualidade de PROD. Modelo misto, herdabilidade e marcadores ficam para outra sessão.
+
+Abra a pasta `projeto-analise` como pasta do projeto. A pasta da seção inteira inclui o pptx e outros roteiros, e o agente passa a tratá-los como se fossem o ensaio.
+
+O banco já está gerado. Há 20 linhagens DH, 2 blocos e 3 ambientes (Uberlândia, Sete Lagoas, Ponta Grossa), no mesmo desenho do pptx: ambiente, ensaio, germoplasma, variável e parcela bruta, em CSV e em `db/ensaio_bruto.duckdb`. O bruto aceita erro de propósito. A lista do que foi plantado fica em `data/gabarito/` e só entra no último bloco.
+
+```{r gerar-banco}
+# Refazer o banco, na pasta projeto-analise, antes da aula se precisar:
+# "C:/Program Files/R/R-4.5.2/bin/Rscript.exe" R/00_gerar_banco.R
+source("R/00_gerar_banco.R")
+```
+
+Cada prompt abaixo vai num chat novo, colado inteiro. O agente grava os scripts; a turma olha o que ele propôs e só então deixa rodar.
+
+---
+
+## A pasta é o contexto
+
+Peça para a turma abrir `CLAUDE.md` e `docs/dicionario_de_dados.csv` antes de colar o prompt. A pergunta para a sala, enquanto o agente responde: o que ele já sabia sem ninguém explicar no chat?
+
+```text
+Leia CLAUDE.md, README.md, docs/dicionario_de_dados.csv, docs/decisoes.md e config/parametros.yaml.
+Em até 12 linhas, diga: qual é a pergunta da análise, qual variável e unidade, o que é proibido alterar, e o que ainda está ambíguo.
+Não altere nenhum arquivo. Não escreva código.
+```
+
+Se a resposta inventar modelo misto ou SNP, o `CLAUDE.md` não foi lido. Pare e peça para reler.
+
+---
+
+## Diagnóstico
+
+
+```text
+Siga CLAUDE.md. Não altere data/bruto/ nem db/. Não abra data/gabarito/.
+
+Escreva R/01_diagnostico.R, em R base, que lê data/bruto/bruto_parcelas.csv
+(PROD como texto) e grava output/tabelas/diagnostico_casos.csv com as colunas
+tipo, parcela_id, detalhe. Uma linha por caso, nestes tipos:
+
+- ausente_codigo: PROD vazio, "0" ou "-"
+- fora_intervalo: PROD numérico < 2000 ou > 20000 (não inclua vazio, 0 e "-")
+- id_fora_padrao: germoplasma_nome que não casa com ^DH[0-9]{2}_[0-9]{4}$
+- duplicata_posicao: mesma combinação de ensaio_id, linha e coluna em mais de uma linha
+
+No console, imprima a contagem de cada tipo e o número de linhas do bruto.
+Crie a pasta output/tabelas se ela não existir. Rode o script e mostre o CSV.
+```
+
+Critério para seguir em frente: o script rodou, o bruto não mudou, e os quatro tipos aparecem com pelo menos um caso.
+
+
+```{r gerar-banco}
+source("R/01_diagnostico.R")
+```
+
+---
+
+## Curadoria com registro
+
+Este é o centro da aula. A regra já está no `CLAUDE.md`: o bruto fica como chegou; cada mudança vira uma linha de registro; outlier dentro do intervalo permanece.
+
+```text
+Siga CLAUDE.md e docs/decisoes.md. Não altere data/bruto/ nem db/. Não abra data/gabarito/.
+
+Escreva R/02_curar.R, em R base, que lê o bruto e produz três arquivos:
+
+1. docs/registro_de_correcoes.csv
+   Colunas já existentes: data, tabela, chave, campo, valor_antigo, valor_novo, motivo.
+   data em AAAA-MM-DD. chave = parcela_id. Uma linha por alteração.
+
+2. data/processado/parcelas_curadas.csv
+   Mesmas colunas do bruto, com PROD numérico (NA quando ausente).
+   Uma linha por posição de campo. O croqui tem 120 posições.
+
+3. output/tabelas/outliers_sinalizados.csv
+   Colunas: parcela_id, ambiente_id, PROD, z.
+   z calculado dentro de cada ambiente, com sd() do R, só nos PROD não ausentes,
+   depois das correções. Inclua |z| > 3. Essas parcelas continuam na tabela curada.
+
+Ordem: normalizar ID (trim, maiúsculas, hífen vira _), tirar duplicata de posição
+quando o valor concorda, tratar vazio / 0 / "-" como NA, aplicar o intervalo do
+dicionário como o CLAUDE.md manda, só então calcular z.
+
+Rode o script. No console: número de linhas curadas, número de NA em PROD,
+número de outliers sinalizados, e confirme que data/bruto/bruto_parcelas.csv
+não foi modificado.
+```
+
+O que checar com a turma antes de aceitar o diff:
+
+- 0 e `-` foram para NA, com motivo no registro.
+- O valor enorme foi dividido por 10, porque o resultado volta para 2000–20000. Apagar esse valor joga fora uma parcela boa.
+- O valor em t/ha foi multiplicado por 1000, pelo mesmo motivo.
+- Nenhuma parcela com |z| > 3 foi removida da tabela curada.
+- O arquivo em `data/bruto/` está igual ao do início.
+
+---
+
+##  Qualidade por ambiente
+
+Aqui o CV é descritivo. O CV experimental do pptx (bloco e genótipo no modelo) é outra conta e não entra hoje.
+
+```text
+Siga CLAUDE.md. Não abra data/gabarito/. Não altere a tabela curada nem o bruto.
+
+Escreva R/03_qualidade.R, em R base, que lê só data/processado/parcelas_curadas.csv
+e grava output/tabelas/qualidade_por_ambiente.csv com as colunas
+ambiente_id, n_parcelas, n_ausentes, n_validos, media, dp, cv_pct.
+
+Por ambiente: n_parcelas é o número de linhas; n_ausentes é o número de PROD ausente;
+media e dp usam só os valores presentes; cv_pct = 100 * dp / media.
+Arredonde media, dp e cv_pct a 1 casa decimal.
+Ordene por ambiente_id. Imprima a tabela no console e rode o script.
+Faça tambem graficos descritivos para melhor entender os locais e variaveis.
+Não ajuste modelo misto.
+```
+
+Pergunta para a sala: os três ambientes ficaram com a mesma completude? Uma média acima de 20.000 kg/ha, ou perto de zero, significa que um erro de digitação ainda está na conta.
+
+---
+
+## Conferir com o que foi plantado
+
+Agora o gabarito pode ser aberto. A pergunta não é se o código é elegante. É se cada problema plantado teve a ação combinada.
+
+```text
+Agora leia data/gabarito/erros_injetados.csv e data/gabarito/qualidade_esperada.csv.
+Compare com docs/registro_de_correcoes.csv, output/tabelas/outliers_sinalizados.csv
+e output/tabelas/qualidade_por_ambiente.csv.
+
+Em uma lista curta: quais tipos de erro foram tratados como o gabarito pede,
+qual ficou de fora, e se algum outlier plausível foi apagado da tabela curada.
+Não altere arquivos. Se a tabela de qualidade divergir, diga em qual ambiente e em qual coluna.
+```
+
+Três perguntas para fechar, com a resposta na frente da sala:
+
+1. O zero de PROD era produtividade baixa ou parcela sem dado?
+2. O valor com |z| > 3 que continua dentro de 2000–20000 sai da análise?
+3. Dá para refazer a tabela curada apagando `data/processado/` e rodando de novo o script, sem encostar no bruto?
+
+Se sobrar tempo, uma consulta só, no banco que já está montado. Ela repete o diagnóstico de ausentes; não substitui a curadoria.
+
+```text
+Se os pacotes DBI e duckdb estiverem instalados, rode no R, somente leitura:
+
+con <- DBI::dbConnect(duckdb::duckdb(), "db/ensaio_bruto.duckdb", read_only = TRUE)
+DBI::dbGetQuery(con, "
+  SELECT ambiente_id,
+         COUNT(*) AS linhas,
+         SUM(CASE WHEN PROD IS NULL OR PROD IN ('', '0', '-') THEN 1 ELSE 0 END) AS codigos_ausentes
+  FROM bruto_parcelas
+  GROUP BY ambiente_id
+  ORDER BY ambiente_id
+")
+DBI::dbDisconnect(con, shutdown = TRUE)
+
+Não grave nada. Diga se a contagem bate com o diagnóstico.
+``
+
