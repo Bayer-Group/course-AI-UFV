@@ -1,68 +1,43 @@
-# R/05_figuras_tabelas.R
-#
-# Entradas:
-#   output/04_individual.csv      — ambiente, media, CV, h2, s2g, s2e
-#   output/04_conjunta_blups.csv  — genotipo, blup, rank
-#   config/parametros.yaml        — caminhos, ids, delineamento
-#
-# Saidas:
-#   output/05_precisao_ambientes.csv  — tabela de precisao por ambiente (ordenada por h2 desc)
-#   output/05_ranking_dh25.csv        — top-20 DH25 (rank, genotipo, blup)
-#   output/05_blups_dh25.png          — grafico de barras horizontais BLUPs top-20
-#
-# Premissas:
-#   - 04_individual.csv tem exatamente as colunas: ambiente, media, CV, h2
-#   - 04_conjunta_blups.csv tem colunas: genotipo, blup, rank; genótipos DH25_* já filtrados
-#   - Parâmetros de caminho e prefixo lidos do yaml; zero hardcode
+# 05_figuras_tabelas.R
+# Entradas: output/04_individual.csv, output/04_conjunta_blups.csv, config/parametros.yaml
+# Saídas:   output/05_tabela_precisao.csv, output/05_ranking_dh25.csv, output/05_blups.pdf
+# Premissa: etapas 01–04 já rodaram.
 
-library(yaml)
+par <- yaml::read_yaml("config/parametros.yaml")
+dir.create(par$caminhos$output, showWarnings = FALSE, recursive = TRUE)
 
-cfg <- yaml.load_file("config/parametros.yaml")
+ind  <- read.csv(file.path(par$caminhos$output, "04_individual.csv"), stringsAsFactors = FALSE)
+blups <- read.csv(file.path(par$caminhos$output, "04_conjunta_blups.csv"), stringsAsFactors = FALSE)
 
-out_dir  <- cfg$caminhos$output
-ind_path <- file.path(out_dir, "04_individual.csv")
-blp_path <- file.path(out_dir, "04_conjunta_blups.csv")
+# 1. Tabela de precisão por ambiente
+precisao <- ind[, c("ambiente", "media_prod", "cv_pct", "h2_medias")]
+precisao$media_prod <- round(precisao$media_prod, 1)
+precisao$cv_pct     <- round(precisao$cv_pct, 2)
+precisao$h2_medias  <- round(precisao$h2_medias, 4)
+write.csv(precisao, file.path(par$caminhos$output, "05_tabela_precisao.csv"), row.names = FALSE)
 
-ind  <- read.csv(ind_path,  stringsAsFactors = FALSE)
-blup <- read.csv(blp_path, stringsAsFactors = FALSE)
+# 2. Ranking completo DH25
+write.csv(blups, file.path(par$caminhos$output, "05_ranking_dh25.csv"), row.names = FALSE)
 
-# --- 1. Tabela de precisao por ambiente (h2 decrescente) ---
-precisao <- ind[order(-ind$h2), c("ambiente", "media", "CV", "h2")]
-write.csv(precisao,
-          file.path(out_dir, "05_precisao_ambientes.csv"),
-          row.names = FALSE)
-cat("05_precisao_ambientes.csv gravado:", nrow(precisao), "linhas\n")
-
-# --- 2. Ranking top-20 DH25 ---
-prefixo <- cfg$ids$prefixo_ranking                    # "DH25_"
-blup25  <- blup[startsWith(blup$genotipo, prefixo), ]
-blup25  <- blup25[order(blup25$rank), ]
-top20   <- head(blup25[, c("rank", "genotipo", "blup")], 20)
-write.csv(top20,
-          file.path(out_dir, "05_ranking_dh25.csv"),
-          row.names = FALSE)
-cat("05_ranking_dh25.csv gravado:", nrow(top20), "linhas\n")
-
-# --- 3. Grafico de barras horizontais (base graphics) ---
-png_path <- file.path(out_dir, "05_blups_dh25.png")
-png(png_path, width = 800, height = 600)
-
-# Ordena crescente para barplot (ultima barra no topo = maior BLUP)
-top20_ord <- top20[order(top20$blup), ]
-
-par(mar = c(5, 8, 3, 2))
-bp <- barplot(
-  top20_ord$blup,
-  names.arg  = top20_ord$genotipo,
-  horiz      = TRUE,
-  las        = 1,
-  xlab       = "BLUP (kg/ha)",
-  main       = "Top-20 DH25: BLUPs do modelo conjunto",
-  col        = ifelse(top20_ord$blup >= 0, "steelblue", "tomato"),
-  border     = NA,
-  cex.names  = 0.75
-)
-abline(v = 0, lty = 2, col = "black")
-
+# 3. Gráfico de BLUPs (ordenados)
+pdf(file.path(par$caminhos$output, "05_blups.pdf"), width = 10, height = 6)
+blups_ord <- blups[order(blups$ranking), ]
+cols <- ifelse(blups_ord$ranking <= 20, "steelblue", "grey70")
+plot(blups_ord$ranking, blups_ord$blup,
+     type = "n", xlab = "Ranking", ylab = "BLUP (kg/ha)",
+     main = "BLUPs das linhagens DH25 — análise conjunta")
+points(blups_ord$ranking, blups_ord$blup, pch = 16, cex = 0.6, col = cols)
+abline(h = mean(blups_ord$blup), lty = 2, col = "red")
+legend("topright", legend = c("Top 20", "Demais", "Média"),
+       col = c("steelblue", "grey70", "red"), pch = c(16, 16, NA),
+       lty = c(NA, NA, 2), cex = 0.8)
 dev.off()
-cat("05_blups_dh25.png gravado\n")
+
+cat("== 05_figuras_tabelas ==\n")
+cat("Tabela de precisao:", nrow(precisao), "ambientes\n")
+cat("Ranking DH25:", nrow(blups), "genotipos\n")
+cat("Grafico: output/05_blups.pdf\n")
+cat("\nPrecisao por ambiente:\n")
+print(precisao)
+cat("\nTop 10 ranking:\n")
+print(head(blups, 10))

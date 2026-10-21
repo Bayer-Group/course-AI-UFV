@@ -1,24 +1,36 @@
-# Entradas:   config/parametros.yaml, data/bruto/vcu_milho_2025_campo.csv
-# Saídas:     data/intermediario/01_importado.rds
-# Premissas:  CSV com 9 colunas conforme dicionário; arquivo bruto nunca alterado
+# 01_importar.R
+# Entradas: data/bruto/vcu_milho_2025_campo.csv, config/parametros.yaml,
+#           docs/dicionario_de_dados.csv
+# Saídas:   data/intermediario/01_importado.rds
+# Premissa: CSV com 9 colunas conforme dicionário; tipos conferidos na importação.
 
-library(yaml)
+par <- yaml::read_yaml("config/parametros.yaml")
 
-cfg <- yaml::read_yaml("config/parametros.yaml")
+dic <- read.csv(par$caminhos$dicionario, stringsAsFactors = FALSE)
+colunas_esperadas <- dic$variavel
 
-d <- read.csv(cfg$caminhos$bruto, stringsAsFactors = FALSE, na.strings = "")
+d <- read.csv(par$caminhos$bruto, stringsAsFactors = FALSE, na.strings = "")
 
-stopifnot(ncol(d) == 9)
+faltam <- setdiff(colunas_esperadas, names(d))
+sobram <- setdiff(names(d), colunas_esperadas)
+if (length(faltam) > 0) stop("Colunas faltando: ", paste(faltam, collapse = ", "))
+if (length(sobram) > 0) warning("Colunas extras: ", paste(sobram, collapse = ", "))
 
-# Coerção de tipos
-d$bloco   <- as.integer(d$bloco)
-d$linha   <- as.integer(d$linha)
-d$coluna  <- as.integer(d$coluna)
-d$PROD    <- as.numeric(d$PROD)
+cols_int <- dic$variavel[dic$tipo == "inteiro"]
+for (col in cols_int) {
+  if (!is.integer(d[[col]])) d[[col]] <- as.integer(d[[col]])
+}
 
-cat("Colunas:", paste(names(d), collapse = ", "), "\n")
-cat("Total de parcelas:", nrow(d), "\n")
+cols_real <- dic$variavel[dic$tipo == "real"]
+for (col in cols_real) {
+  if (!is.numeric(d[[col]])) stop(col, " nao eh numerico")
+}
+
+dir.create(par$caminhos$intermediario, showWarnings = FALSE, recursive = TRUE)
+saveRDS(d, file.path(par$caminhos$intermediario, "01_importado.rds"))
+
+cat("== 01_importar ==\n")
+cat("Linhas:", nrow(d), "\n")
+cat("Colunas:", ncol(d), "\n")
+cat("Parcelas por ambiente:\n")
 print(table(d$ambiente_id))
-
-dir.create(cfg$caminhos$intermediario, showWarnings = FALSE, recursive = TRUE)
-saveRDS(d, file.path(cfg$caminhos$intermediario, "01_importado.rds"))

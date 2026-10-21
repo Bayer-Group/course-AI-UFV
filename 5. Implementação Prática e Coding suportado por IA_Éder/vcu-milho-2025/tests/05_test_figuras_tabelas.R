@@ -1,34 +1,29 @@
 # tests/05_test_figuras_tabelas.R
-# Verifica existencia e integridade minima das saidas da Etapa 05.
 
-library(yaml)
-cfg <- yaml.load_file("config/parametros.yaml")
-out <- cfg$caminhos$output
+par <- yaml::read_yaml("config/parametros.yaml")
+out <- par$caminhos$output
 
-f_prec  <- file.path(out, "05_precisao_ambientes.csv")
-f_rank  <- file.path(out, "05_ranking_dh25.csv")
-f_png   <- file.path(out, "05_blups_dh25.png")
+# Arquivos existem
+stopifnot(file.exists(file.path(out, "05_tabela_precisao.csv")))
+stopifnot(file.exists(file.path(out, "05_ranking_dh25.csv")))
+stopifnot(file.exists(file.path(out, "05_blups.pdf")))
 
-# 1. Arquivos existem
-stopifnot("05_precisao_ambientes.csv existe" = file.exists(f_prec))
-stopifnot("05_ranking_dh25.csv existe"       = file.exists(f_rank))
-stopifnot("05_blups_dh25.png existe"         = file.exists(f_png))
+# Tabela de precisão
+prec <- read.csv(file.path(out, "05_tabela_precisao.csv"), stringsAsFactors = FALSE)
+stopifnot(nrow(prec) == 3)
+stopifnot(all(c("ambiente", "media_prod", "cv_pct", "h2_medias") %in% names(prec)))
+stopifnot(all(prec$h2_medias >= 0 & prec$h2_medias <= 1))
+stopifnot(all(prec$cv_pct > 0))
+stopifnot(all(prec$media_prod >= 2000 & prec$media_prod <= 20000))
 
-# 2. Precisao: 3 linhas (um por ambiente) e colunas esperadas
-prec <- read.csv(f_prec, stringsAsFactors = FALSE)
-stopifnot("precisao tem 3 linhas"     = nrow(prec) == 3L)
-stopifnot("col ambiente em precisao"  = "ambiente" %in% names(prec))
-stopifnot("col media em precisao"     = "media"    %in% names(prec))
-stopifnot("col CV em precisao"        = "CV"       %in% names(prec))
-stopifnot("col h2 em precisao"        = "h2"       %in% names(prec))
+# Ranking
+rnk <- read.csv(file.path(out, "05_ranking_dh25.csv"), stringsAsFactors = FALSE)
+stopifnot(nrow(rnk) == 400)
+stopifnot(all(startsWith(rnk$germoplasma_nome, "DH25_")))
+stopifnot(identical(rnk$ranking, 1:400))
+stopifnot(all(is.finite(rnk$blup)))
 
-# 3. Ranking: <= 20 linhas e so genotipos DH25_*
-rank <- read.csv(f_rank, stringsAsFactors = FALSE)
-prefixo <- cfg$ids$prefixo_ranking
-stopifnot("ranking <= 20 linhas"      = nrow(rank) <= 20L)
-stopifnot("so genotipos DH25_*"       = all(startsWith(rank$genotipo, prefixo)))
+# PDF não vazio
+stopifnot(file.info(file.path(out, "05_blups.pdf"))$size > 0)
 
-# 4. PNG com tamanho > 0
-stopifnot("png > 0 bytes" = file.info(f_png)$size > 0)
-
-cat("Todos os checks da Etapa 05 passaram.\n")
+cat("05_test_figuras_tabelas: PASSED\n")

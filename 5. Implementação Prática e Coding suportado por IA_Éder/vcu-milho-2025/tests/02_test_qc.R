@@ -1,46 +1,59 @@
-# Teste unitário da Etapa 02 — QC
-# Injeta erros sintéticos e verifica que todas as 4 regras os detectam.
+# tests/02_test_qc.R
+# Testa as regras de QC com dados injetados E confere o relatório real.
 
-library(yaml)
+par <- yaml::read_yaml("config/parametros.yaml")
 
-cfg <- yaml::read_yaml("config/parametros.yaml")
+normalizar_id <- function(x) {
+  x <- trimws(x)
+  x <- toupper(x)
+  gsub("[[:space:]-]+", "_", x)
+}
 
-# Carrega funções sem executar o bloco principal
-QC_SOURCE_ONLY <- TRUE
-source("R/02_qc.R")
-
-# ---------- dados sintéticos (8 linhas) ----------
-d_test <- data.frame(
-  parcela_id      = paste0("P_TEST_", 1:8),
-  ensaio_id       = c("ENS_UDI_2025_V", "ENS_UDI_2025_V", "ENS_UDI_2025_V",
-                      "ENS_UDI_2025_V", "ENS_UDI_2025_V",
-                      "ENS_UDI_2025_V", "ENS_UDI_2025_V", "ENS_UDI_2025_V"),
-  ambiente_id     = rep("UDI_2025_V", 8),
-  germoplasma_nome = c("DH25_0001", "DH25_0002", "DH25_0003",   # 3 linhas limpas
-                       "dh25_0001",                              # ID fora do padrão
-                       "DH25_0001",                              # duplicata posição (= linha 1)
-                       "DH25_0004", "DH25_0005", "DH25_0006"),  # fora intervalo + ausente
-  bloco           = c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L),
-  linha           = c(1L, 2L, 3L, 4L, 1L, 6L, 7L, 8L),         # linha 5 duplica (ensaio+linha+coluna) de linha 1
-  coluna          = c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L),
-  PROD            = c(8000, 9000, 10000, 8500, 8000, 500, 25000, NA),
-  data_coleta     = rep("2025-04-01", 8),
+# --- Teste 1: erros injetados ---
+fake <- data.frame(
+  parcela_id   = paste0("P_FAKE_", 1:8),
+  ensaio_id    = rep("ENS_FAKE", 8),
+  ambiente_id  = rep("FAKE_2025_V", 8),
+  germoplasma_nome = c("DH25_0001", "dh25_0002", "DH25 0003",
+                        "DH25_0004", "DH25_0005", "DH25_0006",
+                        "DH25_0007", "DH25_0008"),
+  bloco  = c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L),
+  linha  = c(1L, 2L, 3L, 4L, 5L, 5L, 6L, 7L),
+  coluna = c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L),
+  PROD   = c(8000, 9000, 10000, 500, 99999, 11000, 7000, 12000),
+  data_coleta = rep("2026-03-15", 8),
   stringsAsFactors = FALSE
 )
+# Erros esperados:
+#   id_regex: "dh25_0002" (minúscula), "DH25 0003" (espaço) = 2
+#   duplicata: linhas 5+6 mesma posição (ensaio,5,1) = 1
+#   prod_fora: 500 (abaixo), 99999 (acima) = 2
 
-# ---------- rodar detecções ----------
-r_id   <- detectar_id_fora_padrao(d_test, cfg)
-r_dup  <- detectar_duplicata_posicao(d_test, cfg)
-r_fora <- detectar_prod_fora_intervalo(d_test, cfg)
-r_na   <- detectar_prod_ausente(d_test, cfg)
+regex_id <- par$ids$regex
+n_id <- sum(!grepl(regex_id, fake$germoplasma_nome))
+stopifnot(n_id == 2)
 
-partes <- Filter(Negate(is.null), list(r_id, r_dup, r_fora, r_na))
-rel    <- do.call(rbind, partes)
+fake$geno_norm <- normalizar_id(fake$germoplasma_nome)
+chave <- par$qc$chave_duplicata
+dup_key <- do.call(paste, c(fake[chave], sep = "|"))
+n_dup <- sum(duplicated(dup_key))
+stopifnot(n_dup == 1)
 
-# ---------- asserções ----------
-stopifnot(sum(rel$tipo == "id_fora_padrao")      == 1)
-stopifnot(sum(rel$tipo == "duplicata_posicao")   == 1)
-stopifnot(sum(rel$tipo == "prod_fora_intervalo") == 2)
-stopifnot(sum(rel$tipo == "prod_ausente")        == 1)
+n_fora <- sum(!is.na(fake$PROD) &
+              (fake$PROD < par$qc$prod_min | fake$PROD > par$qc$prod_max))
+stopifnot(n_fora == 2)
 
-cat("02: OK\n")
+# Sem falsos positivos nos limpos
+limpo <- fake[c(1, 7, 8), ]
+stopifnot(all(grepl(regex_id, limpo$germoplasma_nome)))
+stopifnot(all(limpo$PROD >= par$qc$prod_min & limpo$PROD <= par$qc$prod_max))
+
+# --- Teste 2: relatório real ---
+rel <- read.csv(file.path(par$caminhos$output, "02_qc_relatorio.csv"),
+                stringsAsFactors = FALSE)
+stopifnot(sum(rel$tipo == "id_regex")  == 5)
+stopifnot(sum(rel$tipo == "duplicata") == 2)
+stopifnot(sum(rel$tipo == "prod_fora") == 7)
+stopifnot(nrow(rel) == 14)
+
+cat("02_test_qc: PASSED\n")

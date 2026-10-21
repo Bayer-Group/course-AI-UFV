@@ -1,21 +1,13 @@
-library(yaml)
+# tests/01_test_importar.R
+stopifnot(file.exists("data/intermediario/01_importado.rds"))
 
-cfg <- yaml::read_yaml("config/parametros.yaml")
-rds_path <- file.path(cfg$caminhos$intermediario, "01_importado.rds")
+d <- readRDS("data/intermediario/01_importado.rds")
 
-stopifnot(file.exists(rds_path))
-
-d <- readRDS(rds_path)
-
-stopifnot(ncol(d) == 9)
 stopifnot(nrow(d) == 2426)
+stopifnot(ncol(d) == 9)
+stopifnot(setequal(unique(d$ambiente_id), c("PGO_2025_V", "SLG_2025_V", "UDI_2025_V")))
+stopifnot(is.integer(d$bloco), is.integer(d$linha), is.integer(d$coluna))
 stopifnot(is.numeric(d$PROD))
-stopifnot(is.integer(d$bloco))
-stopifnot(is.integer(d$linha))
-stopifnot(is.integer(d$coluna))
-stopifnot(is.character(d$parcela_id))
+stopifnot(is.character(d$germoplasma_nome))
 
-ambientes_esperados <- c("PGO_2025_V", "SLG_2025_V", "UDI_2025_V")
-stopifnot(all(ambientes_esperados %in% unique(d$ambiente_id)))
-
-cat("01: OK\n")
+cat("01_test_importar: PASSED\n")

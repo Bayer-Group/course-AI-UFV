@@ -1,96 +1,60 @@
-# Entradas:   config/parametros.yaml, data/intermediario/01_importado.rds
-# Saídas:     output/02_qc_relatorio.csv
-# Premissas:  01_importado.rds existe; tipos já coercidos (PROD numeric, linha/coluna integer)
+# 02_qc.R
+# Entradas: data/intermediario/01_importado.rds, config/parametros.yaml
+# Saídas:   output/02_qc_relatorio.csv
+# Premissa: só relata problemas, não corrige nada.
 
-library(yaml)
+par <- yaml::read_yaml("config/parametros.yaml")
+d <- readRDS(file.path(par$caminhos$intermediario, "01_importado.rds"))
 
-cfg <- yaml::read_yaml("config/parametros.yaml")
+normalizar_id <- function(x) {
+  x <- trimws(x)
+  x <- toupper(x)
+  gsub("[[:space:]-]+", "_", x)
+}
 
-# ---------- funções de detecção (exportadas para o teste) ----------
+relatorio <- data.frame(
+  tipo = character(), parcela_id = character(),
+  campo = character(), valor = character(), regra = character(),
+  stringsAsFactors = FALSE
+)
 
-detectar_id_fora_padrao <- function(d, cfg) {
-  # Checa o valor original: IDs que precisam de normalização também são flagados
-  flag <- !grepl(cfg$ids$regex, d$germoplasma_nome) & !is.na(d$germoplasma_nome)
-  if (!any(flag)) return(NULL)
-  data.frame(
-    tipo       = "id_fora_padrao",
-    parcela_id = d$parcela_id[flag],
-    variavel   = "germoplasma_nome",
-    valor      = d$germoplasma_nome[flag],
-    regra      = cfg$ids$regex,
+regex_id <- par$ids$regex
+ruim <- !grepl(regex_id, d$germoplasma_nome)
+if (any(ruim)) {
+  relatorio <- rbind(relatorio, data.frame(
+    tipo = "id_regex", parcela_id = d$parcela_id[ruim],
+    campo = "germoplasma_nome", valor = d$germoplasma_nome[ruim],
+    regra = regex_id, stringsAsFactors = FALSE
+  ))
+}
+
+d$geno_norm <- normalizar_id(d$germoplasma_nome)
+chave <- par$qc$chave_duplicata
+dup_key <- do.call(paste, c(d[chave], sep = "|"))
+is_dup <- duplicated(dup_key)
+if (any(is_dup)) {
+  relatorio <- rbind(relatorio, data.frame(
+    tipo = "duplicata", parcela_id = d$parcela_id[is_dup],
+    campo = paste(chave, collapse = ","),
+    valor = dup_key[is_dup],
+    regra = "posicao_duplicada", stringsAsFactors = FALSE
+  ))
+}
+
+fora <- !is.na(d$PROD) & (d$PROD < par$qc$prod_min | d$PROD > par$qc$prod_max)
+if (any(fora)) {
+  relatorio <- rbind(relatorio, data.frame(
+    tipo = "prod_fora", parcela_id = d$parcela_id[fora],
+    campo = "PROD", valor = as.character(d$PROD[fora]),
+    regra = paste0("[", par$qc$prod_min, ",", par$qc$prod_max, "]"),
     stringsAsFactors = FALSE
-  )
+  ))
 }
 
-detectar_duplicata_posicao <- function(d, cfg) {
-  chave_cols <- cfg$qc$chave_duplicata          # [ensaio_id, linha, coluna]
-  chave      <- do.call(paste, c(d[chave_cols], sep = ":"))
-  flag       <- duplicated(chave)
-  if (!any(flag)) return(NULL)
-  data.frame(
-    tipo       = "duplicata_posicao",
-    parcela_id = d$parcela_id[flag],
-    variavel   = paste(chave_cols, collapse = ":"),
-    valor      = chave[flag],
-    regra      = "chave unica por (ensaio_id, linha, coluna)",
-    stringsAsFactors = FALSE
-  )
-}
+dir.create(par$caminhos$output, showWarnings = FALSE, recursive = TRUE)
+write.csv(relatorio, file.path(par$caminhos$output, "02_qc_relatorio.csv"), row.names = FALSE)
 
-detectar_prod_fora_intervalo <- function(d, cfg) {
-  flag <- !is.na(d$PROD) & (d$PROD < cfg$qc$prod_min | d$PROD > cfg$qc$prod_max)
-  if (!any(flag)) return(NULL)
-  data.frame(
-    tipo       = "prod_fora_intervalo",
-    parcela_id = d$parcela_id[flag],
-    variavel   = "PROD",
-    valor      = as.character(d$PROD[flag]),
-    regra      = paste0("PROD em [", cfg$qc$prod_min, ", ", cfg$qc$prod_max, "]"),
-    stringsAsFactors = FALSE
-  )
-}
-
-detectar_prod_ausente <- function(d, cfg) {
-  flag <- is.na(d$PROD)
-  if (!any(flag)) return(NULL)
-  data.frame(
-    tipo       = "prod_ausente",
-    parcela_id = d$parcela_id[flag],
-    variavel   = "PROD",
-    valor      = NA_character_,
-    regra      = "PROD nao pode ser NA",
-    stringsAsFactors = FALSE
-  )
-}
-
-# ---------- execução principal (só roda quando chamado diretamente) ----------
-
-if (!exists("QC_SOURCE_ONLY") || !QC_SOURCE_ONLY) {
-  d <- readRDS(file.path(cfg$caminhos$intermediario, "01_importado.rds"))
-
-  partes <- list(
-    detectar_id_fora_padrao(d, cfg),
-    detectar_duplicata_posicao(d, cfg),
-    detectar_prod_fora_intervalo(d, cfg),
-    detectar_prod_ausente(d, cfg)
-  )
-  partes <- Filter(Negate(is.null), partes)
-
-  if (length(partes) == 0) {
-    relatorio <- data.frame(
-      tipo = character(), parcela_id = character(), variavel = character(),
-      valor = character(), regra = character(), stringsAsFactors = FALSE
-    )
-    cat("Nenhum problema encontrado.\n")
-  } else {
-    relatorio <- do.call(rbind, partes)
-    cat("Problemas encontrados por tipo:\n")
-    print(table(relatorio$tipo))
-  }
-
-  dir.create(cfg$caminhos$output, showWarnings = FALSE, recursive = TRUE)
-  write.csv(relatorio,
-            file.path(cfg$caminhos$output, "02_qc_relatorio.csv"),
-            row.names = FALSE)
-  cat("Salvo em", file.path(cfg$caminhos$output, "02_qc_relatorio.csv"), "\n")
-}
+cat("== 02_qc ==\n")
+cat("Problemas por tipo:\n")
+print(table(relatorio$tipo))
+cat("Total:", nrow(relatorio), "\n")

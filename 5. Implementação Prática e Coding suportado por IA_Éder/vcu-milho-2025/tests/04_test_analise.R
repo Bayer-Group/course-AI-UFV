@@ -1,43 +1,36 @@
-# Testa outputs de R/04_analise.R
-# Falha (stop) se qualquer check quebrar.
+# tests/04_test_analise.R
+# Verifica saidas da etapa 04
 
-library(yaml)
-cfg <- yaml::read_yaml("config/parametros.yaml")
-outd <- cfg$caminhos$output
+par <- yaml::read_yaml("config/parametros.yaml")
+out <- par$caminhos$output
+pass <- 0; fail <- 0
 
-# ── Arquivos existem com colunas esperadas ────────────────────────────────────
-ind_path   <- file.path(outd, "04_individual.csv")
-blups_path <- file.path(outd, "04_conjunta_blups.csv")
+chk <- function(desc, expr) {
+  ok <- tryCatch(expr, error = function(e) FALSE)
+  if (isTRUE(ok)) { cat("PASS:", desc, "\n"); pass <<- pass + 1 }
+  else            { cat("FAIL:", desc, "\n"); fail <<- fail + 1 }
+}
 
-stopifnot("04_individual.csv não existe"      = file.exists(ind_path))
-stopifnot("04_conjunta_blups.csv não existe"  = file.exists(blups_path))
+# --- individual ---
+f_ind <- file.path(out, "04_individual.csv")
+chk("04_individual.csv existe", file.exists(f_ind))
 
-ind   <- read.csv(ind_path,   stringsAsFactors = FALSE)
-blups <- read.csv(blups_path, stringsAsFactors = FALSE)
+ind <- read.csv(f_ind, stringsAsFactors = FALSE)
+chk("3 linhas (ambientes)", nrow(ind) == 3)
+chk("h2 entre 0 e 1",      all(ind$h2_medias >= 0 & ind$h2_medias <= 1))
+chk("var_genotipo >= 0",    all(ind$var_genotipo >= 0))
+chk("var_residual >= 0",    all(ind$var_residual >= 0))
+chk("CV > 0",               all(ind$cv_pct > 0))
 
-stopifnot("colunas ind"   = all(c("ambiente","media","CV","h2") %in% names(ind)))
-stopifnot("colunas blups" = all(c("genotipo","blup","rank")     %in% names(blups)))
+# --- conjunta ---
+f_blup <- file.path(out, "04_conjunta_blups.csv")
+chk("04_conjunta_blups.csv existe", file.exists(f_blup))
 
-# ── h² dentro de [0, 1] ───────────────────────────────────────────────────────
-stopifnot("h2 >= 0" = all(ind$h2 >= 0))
-stopifnot("h2 <= 1" = all(ind$h2 <= 1))
+bl <- read.csv(f_blup, stringsAsFactors = FALSE)
+chk("so DH25 (nenhum DH24)", !any(startsWith(bl$germoplasma_nome, "DH24_")))
+chk("ranking 1:N sem lacunas", identical(bl$ranking, seq_len(nrow(bl))))
+chk("BLUPs numericos sem NA",  all(is.finite(bl$blup)))
+chk("400 genotipos DH25",      nrow(bl) == 400)
 
-# ── Variâncias ≥ 0 ────────────────────────────────────────────────────────────
-stopifnot("s2g >= 0" = all(ind$s2g >= 0))
-stopifnot("s2e >= 0" = all(ind$s2e >= 0))
-
-# ── BLUPs contém apenas DH25_* ───────────────────────────────────────────────
-prefixo <- cfg$ids$prefixo_ranking
-stopifnot("BLUPs só DH25_*" = all(startsWith(blups$genotipo, prefixo)))
-
-# ── Rank é sequência sem repetição ───────────────────────────────────────────
-stopifnot("rank sequencial" = identical(sort(blups$rank), seq_len(nrow(blups))))
-
-# ── Três ambientes no individual ─────────────────────────────────────────────
-stopifnot("3 ambientes" = nrow(ind) == 3L)
-
-cat("Todos os checks passaram.\n")
-cat(sprintf("  Ambientes: %s\n", paste(ind$ambiente, collapse=", ")))
-cat(sprintf("  h2: %s\n", paste(round(ind$h2, 3), collapse=", ")))
-cat(sprintf("  CV: %s\n", paste(round(ind$CV, 1), collapse=", ")))
-cat(sprintf("  n BLUPs DH25: %d\n", nrow(blups)))
+cat("\n", pass, "PASS,", fail, "FAIL\n")
+if (fail > 0) stop("Testes falharam")

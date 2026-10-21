@@ -1,77 +1,75 @@
-# Entradas:   config/parametros.yaml, data/processado/03_curado.rds
-# Saídas:     output/04_individual.csv  (ambiente, media, CV, h2)
-#             output/04_conjunta_blups.csv (genotipo, blup, rank)
-# Premissas:  03_curado.rds existe; PROD em kg/ha; bloco como inteiro 1–n_blocos;
-#             germoplasma_nome normalizado; lme4 instalado.
+# 04_analise.R
+# Entradas: data/processado/03_curado.rds, config/parametros.yaml
+# Saidas:   output/04_individual.csv, output/04_conjunta_blups.csv
+# Premissas: bloco fixo, genotipo aleatorio; h2 = s2g/(s2g+s2e/r);
+#            ranking so DH25; testemunhas DH24 entram no modelo.
 
-library(yaml)
 library(lme4)
 
-cfg  <- yaml::read_yaml("config/parametros.yaml")
-d    <- readRDS(file.path(cfg$caminhos$processado, "03_curado.rds"))
-r    <- cfg$delineamento$n_blocos          # número de blocos (do yaml)
-outd <- cfg$caminhos$output
+par <- yaml::read_yaml("config/parametros.yaml")
+d   <- readRDS(file.path(par$caminhos$processado, "03_curado.rds"))
 
-dir.create(outd, showWarnings = FALSE, recursive = TRUE)
+r <- par$delineamento$n_blocos
 
-# Garante fatores
-d$germoplasma_nome <- as.factor(d$germoplasma_nome)
-d$bloco            <- as.factor(d$bloco)
-d$ambiente_id      <- as.factor(d$ambiente_id)
+# ---------- Analise individual (por ambiente) ----------
+ambientes <- sort(unique(d$ambiente_id))
 
-# ── Análise individual por ambiente ──────────────────────────────────────────
-ambientes <- levels(d$ambiente_id)
-
-ind_res <- lapply(ambientes, function(amb) {
-  sub  <- d[d$ambiente_id == amb & !is.na(d$PROD), ]
-  fit  <- lmer(PROD ~ bloco + (1 | germoplasma_nome), data = sub, REML = TRUE)
+indiv <- do.call(rbind, lapply(ambientes, function(amb) {
+  sub <- d[d$ambiente_id == amb, ]
+  fit <- lmer(PROD ~ factor(bloco) + (1 | germoplasma_nome),
+              data = sub, na.action = na.omit)
   vc   <- as.data.frame(VarCorr(fit))
   s2g  <- vc$vcov[vc$grp == "germoplasma_nome"]
   s2e  <- vc$vcov[vc$grp == "Residual"]
+  mu   <- mean(sub$PROD, na.rm = TRUE)
   h2   <- s2g / (s2g + s2e / r)
-  med  <- mean(sub$PROD, na.rm = TRUE)
-  cv   <- sqrt(s2e) / med * 100
-  cat(sprintf("\n[%s]  media=%.1f  CV=%.1f%%  h2=%.3f  s2g=%.1f  s2e=%.1f\n",
-              amb, med, cv, h2, s2g, s2e))
-  data.frame(ambiente = amb, media = round(med, 1), CV = round(cv, 2),
-             h2 = round(h2, 4), s2g = round(s2g, 1), s2e = round(s2e, 1),
+  cv   <- 100 * sqrt(s2e) / mu
+  data.frame(ambiente = amb, media_prod = round(mu, 2),
+             cv_pct = round(cv, 2), var_genotipo = round(s2g, 4),
+             var_residual = round(s2e, 4), h2_medias = round(h2, 4),
              stringsAsFactors = FALSE)
-})
+}))
 
-ind_df <- do.call(rbind, ind_res)
-write.csv(ind_df, file.path(outd, "04_individual.csv"), row.names = FALSE)
+stopifnot(all(indiv$h2_medias >= 0 & indiv$h2_medias <= 1))
+stopifnot(all(indiv$var_genotipo >= 0))
+stopifnot(all(indiv$var_residual >= 0))
 
-# ── Análise conjunta ──────────────────────────────────────────────────────────
-d_conj <- d[!is.na(d$PROD), ]
+dir.create(par$caminhos$output, showWarnings = FALSE, recursive = TRUE)
+write.csv(indiv, file.path(par$caminhos$output, "04_individual.csv"),
+          row.names = FALSE)
 
-fit_conj <- lmer(
-  PROD ~ ambiente_id + (1 | ambiente_id:bloco) + (1 | germoplasma_nome) +
-         (1 | germoplasma_nome:ambiente_id),
-  data = d_conj, REML = TRUE
+cat("== 04 Analise individual ==\n")
+print(indiv)
+
+# ---------- Analise conjunta ----------
+fit_conj <- lmer(PROD ~ ambiente_id +
+                   (1 | ambiente_id:bloco) +
+                   (1 | germoplasma_nome) +
+                   (1 | germoplasma_nome:ambiente_id),
+                 data = d, na.action = na.omit)
+
+cat("\n== 04 Componentes de variancia (conjunta) ==\n")
+print(VarCorr(fit_conj), comp = "Variance")
+
+# BLUPs: intercepto + efeito aleatorio do genotipo
+intercept <- fixef(fit_conj)[1]
+re_geno   <- ranef(fit_conj)$germoplasma_nome
+blups     <- data.frame(
+  germoplasma_nome = rownames(re_geno),
+  blup = round(intercept + re_geno[, 1], 2),
+  stringsAsFactors = FALSE
 )
 
-cat("\n[Conjunta] componentes de variância:\n")
-print(VarCorr(fit_conj))
+# Filtrar so DH25
+pref <- par$ids$prefixo_ranking
+blups <- blups[startsWith(blups$germoplasma_nome, pref), ]
+blups <- blups[order(-blups$blup), ]
+blups$ranking <- seq_len(nrow(blups))
+rownames(blups) <- NULL
 
-# BLUPs de genotipo (efeito principal)
-blups_all <- ranef(fit_conj)$germoplasma_nome
-blups_all$genotipo <- rownames(blups_all)
-names(blups_all)[1] <- "blup"
+write.csv(blups, file.path(par$caminhos$output, "04_conjunta_blups.csv"),
+          row.names = FALSE)
 
-# Ranking apenas DH25_*
-prefixo <- cfg$ids$prefixo_ranking
-blups25 <- blups_all[startsWith(blups_all$genotipo, prefixo), ]
-blups25 <- blups25[order(-blups25$blup), ]
-blups25$rank <- seq_len(nrow(blups25))
-rownames(blups25) <- NULL
-
-cat(sprintf("\nBLUPs extraídos: %d DH25_* genótipos ranqueados\n", nrow(blups25)))
-cat(sprintf("Top-3: %s (%.1f), %s (%.1f), %s (%.1f)\n",
-    blups25$genotipo[1], blups25$blup[1],
-    blups25$genotipo[2], blups25$blup[2],
-    blups25$genotipo[3], blups25$blup[3]))
-
-write.csv(blups25[, c("genotipo", "blup", "rank")],
-          file.path(outd, "04_conjunta_blups.csv"), row.names = FALSE)
-
-cat("\nSaídas gravadas em", outd, "\n")
+cat("\n== 04 Top 10 DH25 ==\n")
+print(head(blups, 10))
+cat("\nTotal DH25 no ranking:", nrow(blups), "\n")

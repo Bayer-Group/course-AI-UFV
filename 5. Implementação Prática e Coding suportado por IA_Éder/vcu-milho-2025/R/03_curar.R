@@ -1,120 +1,82 @@
-# Entradas:   config/parametros.yaml, data/intermediario/01_importado.rds,
-#             docs/registro_de_correcoes.csv
-# Saídas:     data/processado/03_curado.rds,
-#             docs/registro_de_correcoes.csv (acrescenta linhas)
-# Premissas:  01_importado.rds existe; tipos já coercidos (PROD numeric,
-#             linha/coluna integer)
+# 03_curar.R
+# Entradas: data/intermediario/01_importado.rds, config/parametros.yaml
+# Saídas:   data/processado/03_curado.rds, docs/registro_de_correcoes.csv
+# Premissa: normaliza IDs, remove duplicatas de posição, PROD fora → NA.
 
-library(yaml)
+par <- yaml::read_yaml("config/parametros.yaml")
+d <- readRDS(file.path(par$caminhos$intermediario, "01_importado.rds"))
 
-cfg <- yaml::read_yaml("config/parametros.yaml")
+reg <- data.frame(
+  parcela_id = character(), campo = character(),
+  valor_original = character(), valor_novo = character(),
+  tipo = character(), regra = character(),
+  stringsAsFactors = FALSE
+)
 
-d <- readRDS(file.path(cfg$caminhos$intermediario, "01_importado.rds"))
+normalizar_id <- function(x) {
+  x <- trimws(x)
+  x <- toupper(x)
+  gsub("[[:space:]-]+", "_", x)
+}
 
-# acumula linhas novas para o registro
-novas_correcoes <- list()
-
-# ── 1. Normalizar germoplasma_nome ────────────────────────────────────────────
-nome_norm <- toupper(trimws(d$germoplasma_nome))
-flag_norm <- nome_norm != d$germoplasma_nome & !is.na(d$germoplasma_nome)
-
-if (any(flag_norm)) {
-  novas_correcoes[["norm"]] <- data.frame(
-    parcela_id     = d$parcela_id[flag_norm],
-    variavel       = "germoplasma_nome",
-    valor_original = d$germoplasma_nome[flag_norm],
-    valor_corrigido= nome_norm[flag_norm],
-    tipo           = "normalizacao_id",
-    regra          = "toupper+trimws",
-    data           = format(Sys.Date(), "%Y-%m-%d"),
-    responsavel    = "03_curar.R",
+# 1. Normalizar IDs
+geno_novo <- normalizar_id(d$germoplasma_nome)
+mudou <- geno_novo != d$germoplasma_nome
+if (any(mudou)) {
+  reg <- rbind(reg, data.frame(
+    parcela_id = d$parcela_id[mudou],
+    campo = "germoplasma_nome",
+    valor_original = d$germoplasma_nome[mudou],
+    valor_novo = geno_novo[mudou],
+    tipo = "id_normalizado",
+    regra = "toupper+trimws+gsub",
     stringsAsFactors = FALSE
-  )
+  ))
+  d$germoplasma_nome <- geno_novo
 }
-d$germoplasma_nome <- nome_norm
 
-# ── 1b. Registrar IDs com erro estrutural que toupper+trimws não resolve ──────
-flag_invalido <- !grepl(cfg$ids$regex, d$germoplasma_nome) & !is.na(d$germoplasma_nome)
-if (any(flag_invalido)) {
-  novas_correcoes[["id_invalido"]] <- data.frame(
-    parcela_id     = d$parcela_id[flag_invalido],
-    variavel       = "germoplasma_nome",
-    valor_original = d$germoplasma_nome[flag_invalido],
-    valor_corrigido= NA_character_,
-    tipo           = "id_fora_padrao_pendente",
-    regra          = cfg$ids$regex,
-    data           = format(Sys.Date(), "%Y-%m-%d"),
-    responsavel    = "03_curar.R",
+# 2. Remover duplicatas de posição (mantém primeira ocorrência)
+chave <- par$qc$chave_duplicata
+dup_key <- do.call(paste, c(d[chave], sep = "|"))
+is_dup <- duplicated(dup_key)
+if (any(is_dup)) {
+  reg <- rbind(reg, data.frame(
+    parcela_id = d$parcela_id[is_dup],
+    campo = paste(chave, collapse = ","),
+    valor_original = dup_key[is_dup],
+    valor_novo = NA_character_,
+    tipo = "duplicata_removida",
+    regra = "duplicated_primeira_ocorrencia",
     stringsAsFactors = FALSE
-  )
+  ))
+  d <- d[!is_dup, ]
 }
 
-# ── 2. Remover duplicatas de posição ─────────────────────────────────────────
-chave_cols <- cfg$qc$chave_duplicata          # [ensaio_id, linha, coluna]
-d <- d[order(d$parcela_id), ]                 # ordena lexicograficamente
-chave <- do.call(paste, c(d[chave_cols], sep = ":"))
-flag_dup <- duplicated(chave)
-
-if (any(flag_dup)) {
-  novas_correcoes[["dup"]] <- data.frame(
-    parcela_id     = d$parcela_id[flag_dup],
-    variavel       = paste(chave_cols, collapse = ":"),
-    valor_original = d$parcela_id[flag_dup],
-    valor_corrigido= NA_character_,
-    tipo           = "duplicata_posicao",
-    regra          = "chave unica por (ensaio_id, linha, coluna)",
-    data           = format(Sys.Date(), "%Y-%m-%d"),
-    responsavel    = "03_curar.R",
+# 3. PROD fora do intervalo → NA
+fora <- !is.na(d$PROD) & (d$PROD < par$qc$prod_min | d$PROD > par$qc$prod_max)
+if (any(fora)) {
+  reg <- rbind(reg, data.frame(
+    parcela_id = d$parcela_id[fora],
+    campo = "PROD",
+    valor_original = as.character(d$PROD[fora]),
+    valor_novo = "NA",
+    tipo = "prod_fora_intervalo",
+    regra = paste0("[", par$qc$prod_min, ",", par$qc$prod_max, "]"),
     stringsAsFactors = FALSE
-  )
-}
-d <- d[!flag_dup, ]
-
-# ── 3. PROD fora do intervalo → NA ───────────────────────────────────────────
-flag_prod <- !is.na(d$PROD) &
-             (d$PROD < cfg$qc$prod_min | d$PROD > cfg$qc$prod_max)
-
-if (any(flag_prod)) {
-  novas_correcoes[["prod"]] <- data.frame(
-    parcela_id     = d$parcela_id[flag_prod],
-    variavel       = "PROD",
-    valor_original = as.character(d$PROD[flag_prod]),
-    valor_corrigido= NA_character_,
-    tipo           = "prod_fora_intervalo",
-    regra          = paste0("PROD em [", cfg$qc$prod_min, ", ", cfg$qc$prod_max, "]"),
-    data           = format(Sys.Date(), "%Y-%m-%d"),
-    responsavel    = "03_curar.R",
-    stringsAsFactors = FALSE
-  )
-  d$PROD[flag_prod] <- NA
+  ))
+  d$PROD[fora] <- NA
 }
 
-# ── Gravar registro_de_correcoes.csv (ler + rbind + write) ───────────────────
-reg_path <- cfg$caminhos$registro_correcoes
-reg_existente <- read.csv(reg_path, stringsAsFactors = FALSE)
+dir.create(par$caminhos$processado, showWarnings = FALSE, recursive = TRUE)
+saveRDS(d, file.path(par$caminhos$processado, "03_curado.rds"))
+write.csv(reg, par$caminhos$registro_correcoes, row.names = FALSE)
 
-if (length(novas_correcoes) > 0) {
-  novas <- do.call(rbind, novas_correcoes)
-  reg_final <- unique(rbind(reg_existente, novas))
-} else {
-  reg_final <- reg_existente
-}
-write.csv(reg_final, reg_path, row.names = FALSE)
-
-# ── Gravar curado ─────────────────────────────────────────────────────────────
-dir.create(cfg$caminhos$processado, showWarnings = FALSE, recursive = TRUE)
-saveRDS(d, file.path(cfg$caminhos$processado, "03_curado.rds"))
-
-# ── Sumário ───────────────────────────────────────────────────────────────────
-prefixo_dh25 <- cfg$ids$prefixo_ranking      # "DH25_"
-prefixo_dh24 <- cfg$ids$prefixo_testemunha   # "DH24_"
-
-n_pendentes <- sum(!grepl(cfg$ids$regex, d$germoplasma_nome) & !is.na(d$germoplasma_nome))
-
-cat("Total de parcelas:", nrow(d), "\n")
-cat("PROD ausente (NA):", sum(is.na(d$PROD)), "\n")
-cat("Genótipos DH25:", length(unique(d$germoplasma_nome[
-  grepl(paste0("^", prefixo_dh25), d$germoplasma_nome)])), "\n")
-cat("Genótipos DH24:", length(unique(d$germoplasma_nome[
-  grepl(paste0("^", prefixo_dh24), d$germoplasma_nome)])), "\n")
-cat("IDs fora do padrão (pendentes confirmação):", n_pendentes, "\n")
+cat("== 03_curar ==\n")
+cat("Linhas finais:", nrow(d), "\n")
+cat("Parcelas por ambiente:\n")
+print(table(d$ambiente_id))
+cat("Genotipos unicos:", length(unique(d$germoplasma_nome)), "\n")
+cat("PROD NA:", sum(is.na(d$PROD)), "\n")
+cat("Correcoes registradas:", nrow(reg), "\n")
+cat("Por tipo:\n")
+print(table(reg$tipo))

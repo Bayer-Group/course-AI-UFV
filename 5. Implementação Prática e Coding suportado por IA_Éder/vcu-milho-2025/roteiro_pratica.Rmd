@@ -49,7 +49,7 @@ docs/dicionario_de_dados.csv. Em até 10 linhas: o que você entendeu sobre os d
 o que é proibido fazer e o que ainda está ambíguo. Não altere nenhum arquivo.
 ```
 
-**Confira:** a resposta cita testcross, kg/ha, intervalo 2.000–20.000, padrão de ID,
+**Confira:** a resposta cita testcross, kg/ha, intervalo 2.000-20.000, padrão de ID,
 DBC com 2 blocos e a proibição de editar `data/bruto/`.
 
 **Teste da proteção (ainda no agente):**
@@ -231,7 +231,7 @@ cat(readLines(arq), sep = "\n")
 
 ```{r etapa04-individual, eval=file.exists("output/04_individual.csv")}
 individual <- read.csv("output/04_individual.csv", stringsAsFactors = FALSE)
-individual[, c("ambiente", "media", "CV", "h2")]
+individual
 ```
 
 Referência (slide 5.6, com QC):
@@ -247,8 +247,8 @@ Referência (slide 5.6, com QC):
 ```{r etapa04-conjunta, eval=file.exists("output/04_conjunta_blups.csv")}
 blups <- read.csv("output/04_conjunta_blups.csv", stringsAsFactors = FALSE)
 cat("Genótipos no modelo (ranking das DH25):", nrow(blups), "\n")
-head(blups[order(blups$rank), c("rank", "genotipo", "blup")], 10)
-blups[blups$genotipo == "DH25_0232", c("rank", "genotipo", "blup")]
+head(blups[order(blups$rank), ])
+blups[blups$germoplasma_nome == "DH25_0232", ]
 ```
 
 **Confira:** 404 genótipos no modelo; `DH25_0232` por volta da **259ª** posição. Se ela
@@ -271,14 +271,6 @@ estiver entre as primeiras, a parcela de 104.613 kg/ha não foi tratada na Etapa
 cat(readLines("docs/etapas/04.md"), sep = "\n")
 ```
 
-3. No painel, `/plugins` → aba **Plugins**: leia a descrição de dois plugins do
-   marketplace oficial (não é preciso instalar).
-4. Opcional (demonstração do professor) — conectar o R ao agente pelo `btw`:
-   ```bash
-   claude mcp add -s user r-btw -- Rscript -e "btw::btw_mcp_server(list('docs', 'pkg', 'env', 'sessioninfo', 'cran'))"
-   claude mcp list
-   ```
-
 ---
 
 # Tarefa — Etapa 05 e teste do clone limpo (para a Seção 3)
@@ -292,14 +284,14 @@ Execute a Etapa 05 do plano aprovado. Rode o teste e mostre o comando e a saída
 source("R/05_figuras_tabelas.R")
 ```
 
-```{r etapa05-tabelas, eval=file.exists("output/05_precisao_ambientes.csv")}
-read.csv("output/05_precisao_ambientes.csv")
+```{r etapa05-tabelas, eval=file.exists("output/05_tabela_precisao.csv")}
+read.csv("output/05_tabela_precisao.csv")
 ```
 
 ```{r etapa05-ranking, eval=file.exists("output/05_ranking_dh25.csv")}
 head(read.csv("output/05_ranking_dh25.csv"), 10)
 ```
 
-```{r etapa05-figura, eval=file.exists("output/05_blups_dh25.png")}
-knitr::include_graphics("output/05_blups_dh25.png")
+```{r etapa05-figura, eval=file.exists("output/05_blups.pdf")}
+knitr::include_graphics("output/05_blups.pdf")
 ```

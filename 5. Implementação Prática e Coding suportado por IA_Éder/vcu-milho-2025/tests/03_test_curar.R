@@ -1,94 +1,65 @@
-# Teste unitário de R/03_curar.R com dados sintéticos.
-# Executa a lógica de cura isolada (sem ler arquivos reais).
+# tests/03_test_curar.R
 
-library(yaml)
-cfg <- yaml::read_yaml("config/parametros.yaml")
+par <- yaml::read_yaml("config/parametros.yaml")
 
-# ── Data frame sintético ──────────────────────────────────────────────────────
-# 5 linhas limpas + 1 ID em caixa baixa + 1 duplicata de posição +
-# 1 PROD fora do intervalo + 1 PROD ausente (NA) = 9 linhas totais
-# Após cura: 9 - 1 duplicata = 8... reconta:
-#   linhas limpas:    5
-#   id_fora_padrao:   1  (será normalizado e mantido)
-#   duplicata:        1  (extra da linha 1 → removida)
-#   PROD fora range:  1  (mantida, PROD vira NA)
-#   PROD ausente:     1  (mantida, sem alteração)
-# Total após remoção de duplicata = 8 linhas
+# --- Teste 1: dados reais curados ---
+d <- readRDS(file.path(par$caminhos$processado, "03_curado.rds"))
 
-d_sintetico <- data.frame(
-  parcela_id       = c("P_UDI_2025_V_0001", "P_UDI_2025_V_0002",
-                       "P_UDI_2025_V_0003", "P_UDI_2025_V_0004",
-                       "P_UDI_2025_V_0005", "P_UDI_2025_V_0006",
-                       "P_UDI_2025_V_0007", "P_UDI_2025_V_0008",
-                       "P_UDI_2025_V_0009"),
-  ensaio_id        = rep("ENS_UDI_2025_V", 9),
-  ambiente_id      = rep("UDI", 9),
-  germoplasma_nome = c("DH25_0001", "DH25_0002", "DH25_0003",
-                       "DH25_0004", "DH25_0005",
-                       "dh25_0001",          # ID em caixa baixa
-                       "DH25_0001",          # duplicata de posição (mesma linha/col que 0001)
-                       "DH25_0006",          # PROD fora do intervalo
-                       "DH25_0007"),         # PROD ausente
-  bloco            = c(1L, 1L, 1L, 2L, 2L, 2L, 1L, 1L, 2L),
-  linha            = c(1L, 2L, 3L, 4L, 5L, 6L, 1L, 7L, 8L),  # linha 1 repete para dup
-  coluna           = c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L),  # col 1 repete para dup
-  PROD             = c(8000, 9000, 7500, 8500, 7000, 6000, 8200, 500, NA_real_),
-  data_coleta      = rep("2025-04-01", 9),
+stopifnot(nrow(d) == 2424)
+stopifnot(all(table(d$ambiente_id) == 808))
+stopifnot(length(unique(d$germoplasma_nome)) == 404)
+stopifnot(all(grepl(par$ids$regex, d$germoplasma_nome)))
+stopifnot(sum(is.na(d$PROD)) == 7)
+prod_ok <- d$PROD[!is.na(d$PROD)]
+stopifnot(all(prod_ok >= par$qc$prod_min & prod_ok <= par$qc$prod_max))
+
+chave <- par$qc$chave_duplicata
+dup_key <- do.call(paste, c(d[chave], sep = "|"))
+stopifnot(!any(duplicated(dup_key)))
+
+reg <- read.csv(par$caminhos$registro_correcoes, stringsAsFactors = FALSE)
+stopifnot(nrow(reg) == 14)
+stopifnot(sum(reg$tipo == "id_normalizado") == 5)
+stopifnot(sum(reg$tipo == "duplicata_removida") == 2)
+stopifnot(sum(reg$tipo == "prod_fora_intervalo") == 7)
+
+# --- Teste 2: erros injetados ---
+normalizar_id <- function(x) {
+  x <- trimws(x)
+  x <- toupper(x)
+  gsub("[[:space:]-]+", "_", x)
+}
+
+fake <- data.frame(
+  parcela_id       = paste0("P_T_", 1:6),
+  ensaio_id        = rep("ENS_T", 6),
+  ambiente_id      = rep("T_2025_V", 6),
+  germoplasma_nome = c("DH25_0001", "dh25_0002", "DH25 0003",
+                        "DH25_0004", "DH25_0005", "DH25_0006"),
+  bloco  = c(1L, 1L, 1L, 1L, 1L, 1L),
+  linha  = c(1L, 2L, 3L, 4L, 5L, 5L),
+  coluna = c(1L, 1L, 1L, 1L, 1L, 1L),
+  PROD   = c(8000, 9000, 10000, 500, 11000, 12000),
+  data_coleta = rep("2026-03-15", 6),
   stringsAsFactors = FALSE
 )
 
-# ── Replicar lógica de cura (sem I/O) ────────────────────────────────────────
-novas_correcoes <- list()
+geno_novo <- normalizar_id(fake$germoplasma_nome)
+mudou <- geno_novo != fake$germoplasma_nome
+stopifnot(sum(mudou) == 2)
+fake$germoplasma_nome <- geno_novo
 
-# 1. Normalizar
-nome_norm <- toupper(trimws(d_sintetico$germoplasma_nome))
-flag_norm <- nome_norm != d_sintetico$germoplasma_nome & !is.na(d_sintetico$germoplasma_nome)
-if (any(flag_norm)) {
-  novas_correcoes[["norm"]] <- data.frame(
-    parcela_id = d_sintetico$parcela_id[flag_norm], tipo = "normalizacao_id",
-    stringsAsFactors = FALSE)
-}
-d_sintetico$germoplasma_nome <- nome_norm
+dup_key2 <- do.call(paste, c(fake[chave], sep = "|"))
+is_dup <- duplicated(dup_key2)
+stopifnot(sum(is_dup) == 1)
+fake <- fake[!is_dup, ]
 
-# 2. Duplicatas
-d_sintetico <- d_sintetico[order(d_sintetico$parcela_id), ]
-chave_cols <- cfg$qc$chave_duplicata
-chave <- do.call(paste, c(d_sintetico[chave_cols], sep = ":"))
-flag_dup <- duplicated(chave)
-if (any(flag_dup)) {
-  novas_correcoes[["dup"]] <- data.frame(
-    parcela_id = d_sintetico$parcela_id[flag_dup], tipo = "duplicata_posicao",
-    stringsAsFactors = FALSE)
-}
-d_sintetico <- d_sintetico[!flag_dup, ]
+fora <- !is.na(fake$PROD) & (fake$PROD < par$qc$prod_min | fake$PROD > par$qc$prod_max)
+stopifnot(sum(fora) == 1)
+fake$PROD[fora] <- NA
 
-# 3. PROD fora do intervalo
-flag_prod <- !is.na(d_sintetico$PROD) &
-             (d_sintetico$PROD < cfg$qc$prod_min | d_sintetico$PROD > cfg$qc$prod_max)
-if (any(flag_prod)) {
-  novas_correcoes[["prod"]] <- data.frame(
-    parcela_id = d_sintetico$parcela_id[flag_prod], tipo = "prod_fora_intervalo",
-    stringsAsFactors = FALSE)
-  d_sintetico$PROD[flag_prod] <- NA
-}
+stopifnot(nrow(fake) == 5)
+stopifnot(sum(is.na(fake$PROD)) == 1)
+stopifnot(all(grepl(par$ids$regex, fake$germoplasma_nome)))
 
-curado   <- d_sintetico
-registro <- do.call(rbind, novas_correcoes)
-
-# ── Asserções ─────────────────────────────────────────────────────────────────
-# 9 linhas - 1 duplicata = 8
-stopifnot(nrow(curado) == 8)
-
-# sem duplicatas de posição
-stopifnot(!any(duplicated(paste(curado$ensaio_id, curado$linha, curado$coluna))))
-
-# sem PROD fora do range (NAs são OK)
-stopifnot(all(is.na(curado$PROD) | (curado$PROD >= cfg$qc$prod_min & curado$PROD <= cfg$qc$prod_max)))
-
-# pelo menos 2 NAs: 1 original + 1 convertido
-stopifnot(sum(is.na(curado$PROD)) >= 2)
-
-# registro tem ao menos 3 linhas (normalizacao + duplicata + prod_fora_intervalo)
-stopifnot(nrow(registro) >= 3)
-
-cat("03: OK\n")
+cat("03_test_curar: PASSED\n")
