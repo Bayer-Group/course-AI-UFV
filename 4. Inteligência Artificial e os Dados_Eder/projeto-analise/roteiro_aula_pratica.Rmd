@@ -37,9 +37,6 @@ Leia CLAUDE.md, README.md, docs/dicionario_de_dados.csv, docs/decisoes.md e conf
 Em até 12 linhas, diga: qual é a pergunta da análise, qual variável e unidade, o que é proibido alterar, e o que ainda está ambíguo.
 Não altere nenhum arquivo. Não escreva código.
 ```
-
-Se a resposta inventar modelo misto ou SNP, o `CLAUDE.md` não foi lido. Pare e peça para reler.
-
 ---
 
 ## Diagnóstico
@@ -64,7 +61,7 @@ Crie a pasta output/tabelas se ela não existir. Rode o script e mostre o CSV.
 Critério para seguir em frente: o script rodou, o bruto não mudou, e os quatro tipos aparecem com pelo menos um caso.
 
 
-```{r gerar-banco}
+```{r gerar-diagnostico}
 source("R/01_diagnostico.R")
 ```
 
