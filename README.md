@@ -85,6 +85,31 @@ References from the academic program:
 - [10. Tomada de Decisão em Programas de Melhoramento_Rodrigo](10.%20Tomada%20de%20Decis%C3%A3o%20em%20Programas%20de%20Melhoramento_Rodrigo) — Reserved for the module; currently only contains `.gitkeep`.
 - [11. Tendências Futuras, Perguntas e Fechamento_Todos](11.%20Tend%C3%AAncias%20Futuras%2C%20Perguntas%20e%20Fechamento_Todos) — Reserved for closing; currently only contains `.gitkeep`.
 
+## How to download this repository
+
+### Option 1 — Git (recommended)
+
+```bash
+git clone https://github.com/bayer-int/course-AI-UFV.git
+cd course-AI-UFV
+```
+
+### Option 2 — ZIP download (no Git required)
+
+1. Go to the repository page on GitHub.
+2. Click the green **Code** button.
+3. Select **Download ZIP**.
+4. Extract the ZIP file to a folder of your choice.
+
+### Option 3 — GitHub CLI
+
+```bash
+gh repo clone bayer-int/course-AI-UFV
+cd course-AI-UFV
+```
+
+> **Note:** This is a private Bayer repository. You need access to the `bayer-int` GitHub organization to clone or download it.
+
 ## Information and registration
 
 - borem@ufv.br
