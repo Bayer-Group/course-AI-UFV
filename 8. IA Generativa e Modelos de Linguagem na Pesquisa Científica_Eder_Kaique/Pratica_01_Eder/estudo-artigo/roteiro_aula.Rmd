@@ -84,8 +84,7 @@ estudo-artigo/
 ├── notas/
 │   ├── 01_mapa_do_artigo.md
 │   ├── 02_glossario.md
-│   ├── 03_perguntas.md
-│   └── 04_critica.md
+│   └── 03_perguntas.md
 ├── config/
 │   └── parametros_artigo.yaml      # cada parâmetro com fonte e status
 ├── R/
@@ -95,11 +94,6 @@ estudo-artigo/
 ```
 
 ## Iniciando o Claude Code
-
-```bash
-cd estudo-artigo
-claude
-```
 
 O `CLAUDE.md` já contém as regras de estudo — verifique que está correto antes de continuar.
 
@@ -115,7 +109,7 @@ O `CLAUDE.md` já contém as regras de estudo — verifique que está correto an
 
 Cole este prompt no Claude Code:
 
-```
+```text
 Leia artigo/Meuwissen_Hayes_Goddard_GS.pdf por completo.
 Seguindo as regras do CLAUDE.md, escreva notas/01_mapa_do_artigo.md com:
 1. A pergunta científica central, em uma frase.
@@ -132,7 +126,7 @@ Use os rótulos [ARTIGO] e [INFERÊNCIA] e indique as páginas.
 
 ## Camada 2 — Glossário operacional
 
-```
+```text
 Crie notas/02_glossario.md com os termos técnicos do artigo.
 Para cada termo: definição dada pelo artigo (com página), definição usual
 na literatura [CONHECIMENTO GERAL] e, quando houver diferença, destaque-a.
@@ -155,9 +149,9 @@ Termos obrigatórios para o artigo de Meuwissen et al.:
 
 ## Camada 3 — Extração dos parâmetros
 
-```
+```text
 Extraia para config/parametros_artigo.yaml TODOS os parâmetros da simulação
-do artigo (Métodos, p. 1820–1823). Para cada parâmetro:
+do artigo (Métodos, p. 1820-1823). Para cada parâmetro:
   valor, unidade, fonte (página/tabela), e status: "informado" ou "suposto".
 Se o valor não estiver no artigo, deixe status: "suposto", valor: null
 e uma nota explicando o que falta.
@@ -168,7 +162,7 @@ e uma nota explicando o que falta.
 
 ## Camada 4 — Tabela 2 em detalhe
 
-```
+```text
 Para a Tabela 2 (p. 1824) do artigo:
 1. O que são as colunas "b" e "r"? Qual a diferença entre elas?
 2. Por que b << 1 para LS e b ≈ 1 para BayesB?
@@ -194,7 +188,7 @@ Tente responder antes de pedir ao agente. Depois confira com o artigo:
 
 ## Modo socrático — o agente pergunta
 
-```
+```text
 Aja como examinador de qualificação em genética quantitativa.
 Faça-me uma pergunta por vez sobre o artigo de Meuwissen et al. (2001),
 começando pelo problema dos graus de liberdade e aumentando a dificuldade.
@@ -225,7 +219,7 @@ O objetivo não é reproduzir os números exatos do artigo, mas observar o
 
 Antes de qualquer código, use este prompt para fixar as expectativas:
 
-```
+```text
 Quero dois cálculos teóricos simples em R, sem simulação.
 
 1. Razão observações/parâmetros do artigo de Meuwissen et al. (2001):
@@ -253,7 +247,7 @@ Use [ARTIGO] para valores do texto e [INFERÊNCIA] para deduções.
 
 Com o gabarito em mãos, peça o código de simulação:
 
-```
+```text
 Crie o arquivo R/10_modelo_minimo.R com uma simulação reduzida de
 Meuwissen et al. (2001) que compare LS e RR-BLUP. Requisitos:
 
@@ -288,7 +282,7 @@ Não adicione dependências externas; só base R.
 
 Após rodar e conferir a tabela, peça a figura:
 
-```
+```text
 Adicione ao final de R/10_modelo_minimo.R um bloco que gera dois
 scatter plots lado a lado (par(mfrow=c(1,2))):
   - Eixo x: GEBV estimado; eixo y: valor genético verdadeiro.
@@ -310,7 +304,7 @@ Só base R, sem ggplot2.
 
 ### Passo 4 — Análise das diferenças
 
-```
+```text
 Com base no código em R/10_modelo_minimo.R e nos resultados da Tabela 2
 (p. 1824) do artigo:
 1. Por que a acurácia do RR-BLUP no modelo mínimo é diferente do valor
@@ -326,7 +320,7 @@ Use [ARTIGO] para o que o texto confirma e [INFERÊNCIA] para deduções.
 
 ## Prompt de síntese
 
-```
+```text
 Escreva REPRODUTIBILIDADE.md com:
 1. Pergunta científica central do artigo (com página).
 2. O que o modelo mínimo reproduz e o que ele simplifica.
