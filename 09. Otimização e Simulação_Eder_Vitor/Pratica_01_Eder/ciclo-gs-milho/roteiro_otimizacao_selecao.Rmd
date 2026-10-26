@@ -1,6 +1,6 @@
 ---
 title: "Otimização da Seleção com Restrições — Roteiro Prático"
-subtitle: "Uso de IA no Melhoramento de Plantas · Seção 4 (2 horas)"
+subtitle: "Uso de IA no Melhoramento de Plantas · Seção 5 (2 horas)"
 author: "Curso UFV 2026"
 date: "`r Sys.Date()`"
 output:
@@ -22,8 +22,8 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 > implementar e validar o otimizador — saindo daqui com scripts reproduzíveis
 > para um programa real.
 >
-> **Pré-requisitos:** o ciclo `ciclo-gs-milho` executado até a etapa 5
-> (`R/05_gs.R`). GEBVs, efeitos de marcadores e a matriz G devem estar no banco.
+> **Pré-requisitos:** dados pré-preparados pelo instrutor (GEBVs, efeitos de
+> marcadores, matriz G e banco DuckDB no diretório `ciclo-gs-milho`).
 
 ---
 
@@ -32,7 +32,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ## Por que selecionar apenas pelos melhores GEBVs é insuficiente?
 
 Selecionar os k melhores por GEBV maximiza o ganho no ciclo seguinte, mas os
-melhores ttendem a ser aparentados. A consequência é aumento rápido da
+melhores tendem a ser aparentados. A consequência é aumento rápido da
 coancestria e perda de variância genética — comprometendo os ciclos futuros.
 
 A **Seleção por Contribuição Ótima (OCS)** de Meuwissen (1997) resolve este
@@ -71,7 +71,7 @@ source("R/00_simula_completo.R")
 
 Abra o terminal do Claude Code na pasta `ciclo-gs-milho/` e execute:
 
-```
+```text
 Leia CLAUDE.md. Crie docs/formulacao_ocs.md com:
 1. Variáveis de decisão, função objetivo e restrições da OCS contínua
    (Meuwissen 1997) para espécie monoica (soma das contribuições = 1).
@@ -97,7 +97,7 @@ uma boa solução.
 
 ## Prompt para o Claude Code
 
-```
+```text
 Leia docs/formulacao_ocs.md. Implemente R/02_ocs_exata.R com a OCS exata
 usando quadprog. Inclua um teste automático que verifique: soma das
 contribuições = 1, todos os valores >= 0, e coancestria <= theta.
@@ -119,7 +119,7 @@ garante o ótimo. **A comparação com o QP é obrigatória.**
 
 ## Prompt para o Claude Code
 
-```
+```text
 Leia R/02_ocs_exata.R e docs/formulacao_ocs.md. Crie R/03_ocs_de.R com duas
 funções: ocs_de_continua() e ocs_de_discreta(k=20), ambas usando DEoptim.
 Ao rodar com source(), use 100 candidatos aleatórios e imprima ganho,
@@ -146,8 +146,8 @@ problema de alocação linear e resolúvel de forma exata com `lpSolve`.
 
 ## Prompt para o Claude Code
 
-```
-Leia R/06_cruzamentos.R e CLAUDE.md. Crie R/04_alocacao_pli.R com uma função
+```text
+Leia R/03_ocs_de.R e CLAUDE.md. Crie R/04_alocacao_pli.R com uma função
 alocar_cruzamentos(ids, gebv, G, n_cruz, uso_max, lambda_c=1.0) que usa
 lpSolve para escolher os melhores pares (objetivo = media_gebv - lambda_c *
 coancestria). Ao rodar com source(), use os ids_selecionados do Passo 3 e
@@ -170,7 +170,7 @@ escolhe o ponto — essa é a decisão do melhorista.
 
 ## Prompt para o Claude Code
 
-```
+```text
 Crie R/05_fronteira.R: para 15 valores de theta entre C_min e C_trunc
 (nos 100 candidatos), calcule a OCS exata e registre (theta, ganho,
 n_contrib). Sobreponha os pontos da DE contínua e discreta. Salve a figura
@@ -197,7 +197,7 @@ Crie o agente uma vez e invoque-o ao final de qualquer etapa.
 
 ## Prompt para o Claude Code — criar o agente
 
-```
+```text
 Crie .claude/agents/revisor-otimizacao.md: um agente que verifica se os
 scripts de OCS respeitam docs/formulacao_ocs.md, se as restrições são
 satisfeitas numericamente e se heurísticas foram comparadas ao ótimo exato.
@@ -206,7 +206,7 @@ Classifica problemas como crítico, moderado ou menor. Ferramentas: Read, Grep.
 
 ## Prompt para o Claude Code — invocar o revisor
 
-```
+```text
 Use o agente revisor-otimizacao para verificar R/03_ocs_de.R e
 R/04_alocacao_pli.R. Reportar os problemas encontrados.
 ```
@@ -219,8 +219,8 @@ Se o tempo permitir, compare estratégias ao longo de múltiplos ciclos.
 
 ## Prompt 7 — Experimento longitudinal
 
-```
-Usando o simulador em R/07_novo_ciclo.R como referência, escreva um script
+```text
+Usando a lógica de ciclos do AlphaSimR, escreva um script
 R/06_experimento_ocs.R que compare ao longo de 5 ciclos:
 (1) truncamento por GEBV (top 20);
 (2) OCS com DeltaF = 1%;
@@ -248,11 +248,31 @@ knitr::include_graphics("reports/experimento_ocs.png")
 
 ---
 
+# Decisão, índices e escala (ver slides Bloco 5)
+
+Os slides do Bloco 5 cobrem três pontos que complementam a prática:
+
+1. **A decisão é do melhorista:** θ reflete horizonte, tamanho da base genética
+   e introdução de germoplasma externo. O otimizador mostra o custo de cada
+   escolha — não elimina a escolha.
+
+2. **Do caráter único ao índice:** a OCS recebe qualquer valor a maximizar.
+   Na prática, ĝ pode ser um índice de seleção (e.g. Smith–Hazel,
+   $\mathbf{b} = \mathbf{P}^{-1}\mathbf{G}\mathbf{a}$). A escolha dos pesos
+   econômicos também é decisão do melhorista.
+
+3. **Escala:** para 200 candidatos o QP é imbatível (~1 s). Com dezenas de
+   milhares, memória da matriz G e custo da função objetivo passam a dominar.
+   O Claude Code ajuda na engenharia (perfilamento, porte para C++), desde que
+   exista uma versão de referência para comparar.
+
+---
+
 # Checklist de reprodutibilidade (Bloco 5 — 15 min)
 
 Antes de encerrar, verifique cada item com o Claude Code:
 
-```
+```text
 Rode o subagente revisor-otimizacao em todos os scripts R/02 a R/06.
 Depois liste quais itens do checklist ainda estão faltando:
 - [ ] formulacao_ocs.md escrito antes do código
