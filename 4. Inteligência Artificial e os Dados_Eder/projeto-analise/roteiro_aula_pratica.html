@@ -493,7 +493,7 @@ Não altere arquivos. Se a tabela de qualidade divergir, diga em qual ambiente e
 <p>Três perguntas para fechar, com a resposta na frente da sala:</p>
 <ol style="list-style-type: decimal">
 <li>O zero de PROD era produtividade baixa ou parcela sem dado?</li>
-<li>O valor com |z| &gt; 3 que continua dentro de 2000–20000 sai da
+<li>O valor com |z| &gt; 3 que continua dentro de 20000-20000 sai da
 análise?</li>
 <li>Dá para refazer a tabela curada apagando
 <code>data/processado/</code> e rodando de novo o script, sem encostar
@@ -501,14 +501,20 @@ no bruto?</li>
 </ol>
 <p>Se sobrar tempo, uma consulta só, no banco que já está montado. Ela
 repete o diagnóstico de ausentes; não substitui a curadoria.</p>
-<p>```text Se os pacotes DBI e duckdb estiverem instalados, rode no R,
-somente leitura:</p>
-<p>con &lt;- DBI::dbConnect(duckdb::duckdb(), “db/ensaio_bruto.duckdb”,
-read_only = TRUE) DBI::dbGetQuery(con, ” SELECT ambiente_id, COUNT(*) AS
-linhas, SUM(CASE WHEN PROD IS NULL OR PROD IN (’‘, ’0’, ‘-’) THEN 1 ELSE
-0 END) AS codigos_ausentes FROM bruto_parcelas GROUP BY ambiente_id
-ORDER BY ambiente_id “) DBI::dbDisconnect(con, shutdown = TRUE)</p>
-<p>Não grave nada. Diga se a contagem bate com o diagnóstico. ``</p>
+<pre class="text"><code>Se os pacotes DBI e duckdb estiverem instalados, rode no R, somente leitura:
+
+con &lt;- DBI::dbConnect(duckdb::duckdb(), &quot;db/ensaio_bruto.duckdb&quot;, read_only = TRUE)
+DBI::dbGetQuery(con, &quot;
+  SELECT ambiente_id,
+         COUNT(*) AS linhas,
+         SUM(CASE WHEN PROD IS NULL OR PROD IN (&#39;&#39;, &#39;0&#39;, &#39;-&#39;) THEN 1 ELSE 0 END) AS codigos_ausentes
+  FROM bruto_parcelas
+  GROUP BY ambiente_id
+  ORDER BY ambiente_id
+&quot;)
+DBI::dbDisconnect(con, shutdown = TRUE)
+
+Não grave nada. Diga se a contagem bate com o diagnóstico.</code></pre>
 </div>
 
 

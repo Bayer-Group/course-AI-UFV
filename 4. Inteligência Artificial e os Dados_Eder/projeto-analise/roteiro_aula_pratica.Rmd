@@ -148,7 +148,7 @@ Não altere arquivos. Se a tabela de qualidade divergir, diga em qual ambiente e
 Três perguntas para fechar, com a resposta na frente da sala:
 
 1. O zero de PROD era produtividade baixa ou parcela sem dado?
-2. O valor com |z| > 3 que continua dentro de 2000–20000 sai da análise?
+2. O valor com |z| > 3 que continua dentro de 20000-20000 sai da análise?
 3. Dá para refazer a tabela curada apagando `data/processado/` e rodando de novo o script, sem encostar no bruto?
 
 Se sobrar tempo, uma consulta só, no banco que já está montado. Ela repete o diagnóstico de ausentes; não substitui a curadoria.
@@ -168,5 +168,5 @@ DBI::dbGetQuery(con, "
 DBI::dbDisconnect(con, shutdown = TRUE)
 
 Não grave nada. Diga se a contagem bate com o diagnóstico.
-``
+```
 
