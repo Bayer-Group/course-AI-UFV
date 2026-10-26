@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Bloco 3 — Dinâmica e loop (5 min)",
+    "body": "• SEÇÃO 12 — BLOCO 3\n• Até 3 rodadas por sessão didática\n• Veredito do painel: maioria (≥ 2 de 3 APROVADO)\n• Se reprovado e N < 3: volta ao escritor\n• Se N = 3: encerra com versão final com ressalvas",
+    "notes": "Divider. Deixe a regra de maioria explícita para evitar discussão procedural no meio da prática."
+  },
+  {
+    "title": "3.1 Regra de veredito",
+    "body": "• Cada revisor: APROVADO ou REPROVADO + bloqueantes\n• Comitê aprova se ≥ 2 de 3 APROVADO\n• Bloqueante = erro factual, citação inventada, lacuna grave\n• Sugestão ≠ bloqueante (não impede sozinha)\n• Consolide os três pareceres antes da próxima rodada",
+    "notes": "Se os três discordarem em 1–1–1, conta como não aprovado (precisa ≥2). Na demo, o instrutor pode forçar um REPROVADO didático na rodada 1."
+  },
+  {
+    "title": "3.2 Por que limitar a 3 rodadas",
+    "body": "• Aula de 60 min: uma rodada completa já ensina o padrão\n• Loop infinito esconde o custo de orquestração\n• Na pesquisa real: prazo e escopo também limitam\n• Rodadas 2–3 = homework opcional\n• Ao parar: declare 'versão final com ressalvas'",
+    "notes": "Evite a tentação de 'só mais uma rodada' no projetor. O fechamento didático importa mais que o texto perfeito."
+  },
+  {
+    "title": "3.3 Artefactos que importam",
+    "body": "• docs/rascunhos/rodada_N.md — texto do escritor\n• docs/pareceres_orientador/rodada_N.md — gate pré-painel\n• docs/decisoes.md — sim/não do aluno com data\n• docs/pareceres_revisores/rodada_N_*.md — três vereditos\n• Sem esses arquivos, a demo não é auditável",
+    "notes": "Mostre a árvore docs/ no explorador se possível. Auditoria é o argumento a favor de multi-agent neste curso."
+  }
+]

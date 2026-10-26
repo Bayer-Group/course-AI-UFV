@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Bloco 1 — O que é multi-agent (8 min)",
+    "body": "• SEÇÃO 12 — BLOCO 1\n• Um LLM vs vários agentes com missão e ferramentas distintas\n• Contexto limpo: o revisor não 'lembra' de ter escrito o texto\n• Âncora: sessão 05 (orientando / orientador)\n• Aqui: revisão bibliográfica, não código R",
+    "notes": "Divider de bloco. Tempo: ~8 minutos. Conecte à sessão 05: lá o orientador lia com contexto limpo e devolvia bloqueantes. O mesmo padrão vale para texto científico."
+  },
+  {
+    "title": "1.1 Um chat só: o que quebra",
+    "body": "• O mesmo modelo escreve e 'revisa' sem adversário real\n• Contexto misturado: elogia o próprio rascunho\n• Difícil auditar quem decidiu o quê\n• Alucinação de DOI parece consenso interno\n• Bom para rascunho; fraco para governança",
+    "notes": "Pergunte à turma: já pediram ao mesmo chat 'revise o que você escreveu'? Quase sempre o modelo é generoso consigo. Multi-agent força separação de papéis e de arquivos de entrega."
+  },
+  {
+    "title": "1.2 Multi-agent: ideia mínima",
+    "body": "• Cada agente = perfil + missão + tools + formato de entrega\n• Arquivos em .claude/agents/ (como na sessão 05)\n• Artefactos em docs/: rascunhos e pareceres separados\n• O humano orquestra: quem chama, quando, e se avança\n• Não precisa de framework novo no curso",
+    "notes": "Mostre mentalmente a pasta .claude/agents/. Enfatize: multi-agent aqui é organização de trabalho, não magia. O custo é mais prompts e mais leitura; o ganho é rastreabilidade."
+  },
+  {
+    "title": "1.3 Âncora sessão 05",
+    "body": "• orientando.md implementava uma etapa do PLANO.md\n• orientador.md lia com contexto limpo e listava bloqueantes\n• Entrega em docs/etapas/ e docs/revisoes/\n• Mesma filo: plano → agente sob regra → parecer → humano\n• Sessão 12 troca código R por texto de revisão",
+    "notes": "Se a turma fez a sessão 05, use 30 segundos. Se não, diga só: já praticamos dois agentes em análise de VCU; agora cinco agentes em texto."
+  }
+]

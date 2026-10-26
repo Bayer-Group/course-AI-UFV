@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Bloco 4 — Missão e regras (4 min)",
+    "body": "• SEÇÃO 12 — BLOCO 4\n• Tema: evolução da seleção genômica\n• Estrutura de ≤ 4 páginas; na aula: 600–900 palavras\n• Só referências da lista fechada em referencias/\n• Rótulos: [LISTA] [INFERÊNCIA] [CONHECIMENTO GERAL]",
+    "notes": "Divider curto antes da prática. Abra MISSAO.md e referencias/README.md na tela se der tempo."
+  },
+  {
+    "title": "4.1 Arco do texto (quatro partes)",
+    "body": "• 1 Antecedentes: MAS e limite de poucos marcadores\n• 2 Marco: Meuwissen, Hayes & Goddard (2001) e GBLUP\n• 3 Ampliação: Bayes*, G×E, multi-ômicas (alto nível)\n• 4 Limites: validação, viés, diversidade\n• Não precisa de equações na demo",
+    "notes": "Âncora à sessão 06 (GBLUP) e 08 (paper 2001). Peça narrativa histórica + cautela, não tutorial de implementação."
+  },
+  {
+    "title": "4.2 Anti-alucinação (regras duras)",
+    "body": "• Proibido inventar DOI, ano ou título\n• Citar só o que está em referencias/README.md → [LISTA]\n• Se generalizar sem item da lista → [CONHECIMENTO GERAL]\n• Se deduzir a partir do texto → [INFERÊNCIA]\n• Orientador e revisores tratam citação inventada como bloqueante",
+    "notes": "Repita a sessão 08: alucinação de citação é o erro que o painel deve pegar. Se o escritor inventar, o gate do aluno deve barrar o envio."
+  },
+  {
+    "title": "4.3 Abrir a prática",
+    "body": "• No Cursor/Claude Code: File → Open Folder\n• Escolha 12. Multi Agents/projeto-revisao-gs\n• Não abra a pasta da seção inteira\n• Siga roteiro_aula.md (prompts copy-paste)\n• Comece pela rodada 1 com /escritor",
+    "notes": "Transição para a prática. Confirme que a pasta aberta é projeto-revisao-gs. Depois disso, saia do modo slides e use o roteiro."
+  }
+]

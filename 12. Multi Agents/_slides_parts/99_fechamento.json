@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Takeaways",
+    "body": "• Multi-agent = papéis + entregas + contexto limpo\n• O aluno no gate é parte do sistema, não ruído\n• Veredito e limite de rodadas evitam loop infinito\n• Lista fechada e rótulos reduzem citação inventada\n• Mesma filo da sessão 05, agora em texto científico",
+    "notes": "Feche em um minuto. Se sobrar tempo, pergunte: onde mais no programa de melhoramento um painel de agentes faria sentido (QC, OCS, decisão de avanço)?"
+  },
+  {
+    "title": "O que fazer depois",
+    "body": "• Completar rodadas 2–3 em casa (opcional)\n• Comparar um único chat vs esta pasta docs/\n• Relacionar com sessão 11 (agentes sob regra e responsabilidade)\n• Não publicar o esboço como revisão formal\n• Rebuild do deck: _build_pptx.ps1",
+    "notes": "Agradeça. Lembre que o material é demonstração didática. Encaminhe dúvidas de instalação Claude Code ao guia da sessão 05."
+  }
+]

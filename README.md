@@ -83,7 +83,8 @@ References from the academic program:
 - [08. IA Generativa e Modelos de Linguagem na Pesquisa Científica_Eder_Kaique](08.%20IA%20Generativa%20e%20Modelos%20de%20Linguagem%20na%20Pesquisa%20Cient%C3%ADfica_Eder_Kaique) — Practice in `Pratica_01_Eder`.
 - [09. Otimização e Simulação_Eder_Vitor](09.%20Otimiza%C3%A7%C3%A3o%20e%20Simula%C3%A7%C3%A3o_Eder_Vitor) — Practices in `Pratica_01_Eder` and `Pratica_02_Vitor`.
 - [10. Tomada de Decisão em Programas de Melhoramento_Rodrigo](10.%20Tomada%20de%20Decis%C3%A3o%20em%20Programas%20de%20Melhoramento_Rodrigo) — Reserved for the module; currently only contains `.gitkeep`.
-- [11. Tendências Futuras, Perguntas e Fechamento_Todos](11.%20Tend%C3%AAncias%20Futuras%2C%20Perguntas%20e%20Fechamento_Todos) — Reserved for closing; currently only contains `.gitkeep`.
+- [11. Tendências Futuras, Perguntas e Fechamento_Todos](11.%20Tend%C3%AAncias%20Futuras%2C%20Perguntas%20e%20Fechamento_Todos) — Closing session: deck, slide script, quick readings, and Q&A guide ([README](11.%20Tend%C3%AAncias%20Futuras%2C%20Perguntas%20e%20Fechamento_Todos/README.md)).
+- [12. Multi Agents](12.%20Multi%20Agents) — Multi-agent demo (writer, supervisor, three reviewers) for a short genomic-selection literature sketch; slides and `projeto-revisao-gs` practice ([README](12.%20Multi%20Agents/README.md)).
 
 ## How to download this repository
 

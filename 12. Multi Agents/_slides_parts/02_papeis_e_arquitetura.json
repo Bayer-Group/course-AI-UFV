@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Bloco 2 — Papéis e arquitetura (5 min)",
+    "body": "• SEÇÃO 12 — BLOCO 2\n• Cinco agentes + o aluno no gate\n• Escritor redige; orientador não edita o texto\n• Três revisores finais com lentes distintas\n• Decisão de envio ao painel: só o aluno",
+    "notes": "Divider. Desenhe no ar ou no quadro o fluxo aluno → escritor → orientador → gate → três revisores."
+  },
+  {
+    "title": "2.1 Os cinco agentes",
+    "body": "• escritor — PhD em melhoramento; redige o esboço\n• orientador — professor sênior; parecer Bloqueantes/Sugestões\n• revisor-gq — genética quantitativa\n• revisor-melhoramento — métodos de melhoramento\n• revisor-molecular — genética molecular / germoplasma",
+    "notes": "Os três revisores cobrem ângulos complementares: modelo e acurácia; desenho de programa; marcadores e conservação. Não peça profundidade de monografia — peçam veredito curto."
+  },
+  {
+    "title": "2.2 O aluno é o escritor",
+    "body": "• Você dirige o agente escritor (prompts + missão)\n• Lê o parecer do orientador\n• Decide: reescrever OU enviar ao painel\n• Anota a decisão em docs/decisoes.md\n• Sem o seu 'sim', os três revisores não entram",
+    "notes": "Este é o slide de governança. Multi-agent sem gate humano vira automação opaca. Na aula, o instrutor pode narrar a decisão em voz alta na primeira rodada."
+  },
+  {
+    "title": "2.3 Diagrama do fluxo",
+    "body": "• Aluno + /escritor → docs/rascunhos/rodada_N.md\n• /orientador → docs/pareceres_orientador/rodada_N.md\n• Gate do aluno (sim/não) → docs/decisoes.md\n• Se sim: /revisor-gq + /revisor-melhoramento + /revisor-molecular\n• Vereditos → docs/pareceres_revisores/",
+    "notes": "Leia como checklist operacional. Na prática, os nomes de arquivo importam: rodada_1, rodada_2, rodada_3."
+  }
+]
