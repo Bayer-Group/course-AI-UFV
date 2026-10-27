@@ -1,0 +1,14 @@
+# Gerados pelos scripts: regeneráveis a partir de data/bruto/ e R/
+data/intermediario/*
+data/processado/*
+output/*
+!**/.gitkeep
+
+# R e editores
+.Rhistory
+.RData
+.Rproj.user/
+
+# Configurações pessoais do Claude Code
+.claude/settings.local.json
+CLAUDE.local.md
