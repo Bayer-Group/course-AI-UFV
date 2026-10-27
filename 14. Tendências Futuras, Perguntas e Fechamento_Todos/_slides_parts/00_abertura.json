@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Tendências futuras, perguntas e fechamento",
+    "body": "• FIT 796 · IA no melhoramento de plantas · UFV × Bayer × IDATA\n• 5 de novembro de 2026 · 13h30–17h00 · Instrutores: todos\n• Sem lab novo: o horizonte 2024–2026, com número e fonte\n• Cinco blocos: modelos, moléculas, edição, plataforma, governança\n• O detalhe está nas notas do apresentador e na pasta dossie/",
+    "notes": "Abra dizendo o que esta tarde não é: não é outro exercício de DuckDB, VCU, GBLUP, prompt ou OCS. É o mapa do que vem depois do que eles praticaram, com casos verificados. Avise que cada slide tem nota de apresentador com a citação, e que o dossiê na pasta da sessão tem o texto longo e os DOIs. O critério da aula: número sem fonte não entra no slide; o que ainda está em aberto fica marcado como a verificar nas notas. Peça que guardem uma pergunta por bloco para o painel final. Fontes: README do curso FIT 796."
+  },
+  {
+    "title": "O arco dos três dias",
+    "body": "• Dia 1: fundamentos, HTP, qualidade de dado, coding com agente\n• Dia 2: seleção genômica, ML/DL, LLM em paper, OCS e simulação\n• Dia 3: decisão de programa (manhã) e tendências (tarde)\n• Filo: dado limpo → agente sob regra → predição honesta → otimização\n• A decisão e a responsabilidade ficam com o melhorista",
+    "notes": "Recapitule em dois minutos o fio que a turma já viveu. Sessão 04 curou o ensaio antes de modelar. Sessão 05 pôs o agente sob deny-list e plano. Sessão 06 mostrou que acurácia sem validação honesta mente. Sessão 08 mostrou alucinação em paper. Sessão 09 mostrou que theta e delta F são decisão humana, não saída de solver. A tarde de hoje estende esse fio: os mesmos critérios de validação, governança e decisão humana valem para foundation model, event, edição e digital twin. Não reabra o conteúdo técnico das sessões anteriores. Fontes: README do repositório do curso."
+  },
+  {
+    "title": "O que esta sessão não repete",
+    "body": "• 04–05: QC, DuckDB, VCU, Claude Code, governança de dado bruto\n• 06: GBLUP, GEBV, validação por família, desafio de acurácia falsa\n• 08: estudo de paper com LLM e engenharia de prompt\n• 09: OCS, delta F, alocação de parcelas, AlphaSimR\n• 10: DSS, ROI e avanço de linhagem — só como âncora, não como reprise",
+    "notes": "Se alguém esperar outro script, diga isso no primeiro minuto. A função deste slide é gerenciar expectativa. Cada bloco vai citar uma âncora dessas sessões em uma frase e seguir para o que elas não cobriram. O risco pedagógico da tarde é virar revisão. Se a discussão voltar para como rodar quadprog ou lme4, redirecione: qual a implicação para o programa daqui a cinco anos? Fontes: plano da Sessão 11."
+  },
+  {
+    "title": "Mapa: já visto, tendência",
+    "body": "• 04–05 dado e VCU → plataforma em tempo real e governança em escala\n• 06–07 GBLUP e ML → DNA e protein foundation models\n• 08 LLM de texto → AgroNT, AlphaFold, design de proteína\n• 09 OCS e AlphaSimR → digital twin operacional do programa\n• 10 portfólio → events, stacking, edição e moléculas aplicadas\n• Agente sob regra → quem assina quando o modelo erra",
+    "notes": "Leia a tabela como índice da tarde. Cada linha é um bloco. Não explique os termos ainda: AgroNT, twin e stacking serão definidos quando chegarem. O ponto é que nenhuma tendência é órfã do curso. Se o tempo apertar, este slide é o que permite pular um bloco sem perder o mapa. Fontes: plano da Sessão 11."
+  }
+]
