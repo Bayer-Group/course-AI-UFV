@@ -30,10 +30,13 @@ Morning from 8:00 AM to 12:00 PM and afternoon from 1:30 PM to 5:00 PM. Each row
 | Nov 3, 2026 | 1:30 PM–5:00 PM | [5. Hands-on implementation and AI-assisted coding](05.%20Implementa%C3%A7%C3%A3o%20Pr%C3%A1tica%20e%20Coding%20suportado%20por%20IA_%C3%89der) | Éder | Slides and live demo |
 | Nov 4, 2026 | 8:00 AM–12:00 PM | [6. Genomic selection with AI support](06.%20Sele%C3%A7%C3%A3o%20Gen%C3%B4mica%20com%20suporte%20da%20IA_Vitor) | Vitor | Slides and live demo |
 | Nov 4, 2026 | 8:00 AM–12:00 PM | [7. Machine learning and deep learning in plant breeding](07.%20Machine%20Learning%20e%20Deep%20Learning%20no%20Melhoramento%20Gen%C3%A9tico_Kaique) | Kaique | Slides, live demo, and risk management |
-| Nov 4, 2026 | 1:30 PM–5:00 PM | [8. Generative AI and language models in scientific research](08.%20IA%20Generativa%20e%20Modelos%20de%20Linguagem%20na%20Pesquisa%20Cient%C3%ADfica_Eder_Kaique) | Éder and Kaique | Live demo |
-| Nov 4, 2026 | 1:30 PM–5:00 PM | [9. Optimization and simulation](09.%20Otimiza%C3%A7%C3%A3o%20e%20Simula%C3%A7%C3%A3o_Eder_Vitor) | Éder and Vitor | Pre-approved hackathon data and phytopathology |
-| Nov 5, 2026 | 8:00 AM–12:00 PM | [10. Decision-making in breeding programs](10.%20Tomada%20de%20Decis%C3%A3o%20em%20Programas%20de%20Melhoramento_Rodrigo) | Rodrigo | Slides and live demo |
-| Nov 5, 2026 | 1:30 PM–5:00 PM | [11. Future trends, Q&A, and closing](11.%20Tend%C3%AAncias%20Futuras%2C%20Perguntas%20e%20Fechamento_Todos) | All | Trends in molecules, peptides, events, drugs, and proteins |
+| Nov 4, 2026 | 1:30 PM–5:00 PM | [8. Optimization and simulation](08.%20Otimiza%C3%A7%C3%A3o%20e%20Simula%C3%A7%C3%A3o_Eder) | Éder | Slides and live demo |
+| Nov 4, 2026 | 1:30 PM–5:00 PM | [9. Optimization and simulation](09.%20Otimiza%C3%A7%C3%A3o%20e%20Simula%C3%A7%C3%A3o_Vitor) | Vitor | Tutorial and challenge |
+| Nov 4, 2026 | 1:30 PM–5:00 PM | [10. Generative AI and language models in scientific research](10.%20IA%20Generativa%20e%20Modelos%20de%20Linguagem%20na%20Pesquisa%20Cient%C3%ADfica_Eder) | Éder | Slides and live demo |
+| Nov 4, 2026 | 1:30 PM–5:00 PM | [11. Generative AI and language models in scientific research](11.%20IA%20Generativa%20e%20Modelos%20de%20Linguagem%20na%20Pesquisa%20Cient%C3%ADfica_Kaique) | Kaique | Live demo |
+| Nov 5, 2026 | 8:00 AM–12:00 PM | [12. Decision-making in breeding programs](12.%20Tomada%20de%20Decis%C3%A3o%20em%20Programas%20de%20Melhoramento_Rodrigo) | Rodrigo | Slides and live demo |
+| Nov 5, 2026 | 1:30 PM–5:00 PM | [13. Discussion on models and tools](13.%20Discuss%C3%A3o%20sobr%20os%20modelos%20e%20Ferramentas) | — | Reserved |
+| Nov 5, 2026 | 1:30 PM–5:00 PM | [14. Future trends, Q&A, and closing](14.%20Tend%C3%AAncias%20Futuras%2C%20Perguntas%20e%20Fechamento_Todos) | All | Trends in molecules, peptides, events, drugs, and proteins |
 
 ## The course
 
@@ -52,7 +55,7 @@ The syllabus, in the order of the academic program, covers:
 9. Optimization and simulation
 10. Future trends, Q&A, and closing
 
-The intensive edition also includes the module [AI concepts, models, agents, IDEs, and hardware for AI](02.%20Conceitos%20em%20IA%2C%20Modelos%2C%20Agents%2C%20IDE%2C%20Hardware%20para%20IA_Kaique). In the three-day schedule, optimization and simulation comes before decision-making.
+The intensive edition also includes the module [AI concepts, models, agents, IDEs, and hardware for AI](02.%20Conceitos%20em%20IA%2C%20Modelos%2C%20Agents%2C%20IDE%2C%20Hardware%20para%20IA_Kaique). On November 4, optimization and simulation ([Éder](08.%20Otimiza%C3%A7%C3%A3o%20e%20Simula%C3%A7%C3%A3o_Eder), [Vitor](09.%20Otimiza%C3%A7%C3%A3o%20e%20Simula%C3%A7%C3%A3o_Vitor)) shares the afternoon with generative AI ([Éder](10.%20IA%20Generativa%20e%20Modelos%20de%20Linguagem%20na%20Pesquisa%20Cient%C3%ADfica_Eder), [Kaique](11.%20IA%20Generativa%20e%20Modelos%20de%20Linguagem%20na%20Pesquisa%20Cient%C3%ADfica_Kaique)). Decision-making is on the morning of November 5, before the discussion on models and tools and the closing session.
 
 ## References
 
@@ -76,15 +79,17 @@ References from the academic program:
 - [01. Introdução à Inteligencia Artificial_Rodrigo](01.%20Introdu%C3%A7%C3%A3o%20%C3%A0%20Inteligencia%20Artificial_Rodrigo) — Reserved for slides; currently only contains `.gitkeep`.
 - [02. Conceitos em IA, Modelos, Agents, IDE, Hardware para IA_Kaique](02.%20Conceitos%20em%20IA%2C%20Modelos%2C%20Agents%2C%20IDE%2C%20Hardware%20para%20IA_Kaique) — Reserved for slides; currently only contains `.gitkeep`.
 - [03. Fenotipagem de Alto Desempenho com suporte de IA_Vinicius](03.%20Fenotipagem%20de%20Alto%20Desempenho%20com%20suporte%20de%20IA_Vinicius) — Reserved for slides; currently only contains `.gitkeep`.
-- [04. Inteligência Artificial e os Dados_Eder](04.%20Intelig%C3%AAncia%20Artificial%20e%20os%20Dados_Eder) — Slides and hands-on practice in `projeto-analise`.
-- [05. Implementação Prática e Coding suportado por IA_Éder](05.%20Implementa%C3%A7%C3%A3o%20Pr%C3%A1tica%20e%20Coding%20suportado%20por%20IA_%C3%89der) — Slides, [guia_instalacao.md](05.%20Implementa%C3%A7%C3%A3o%20Pr%C3%A1tica%20e%20Coding%20suportado%20por%20IA_%C3%89der/guia_instalacao.md), and the `vcu-milho-2025` practice.
-- [06. Seleção Genômica com suporte da IA_Vitor](06.%20Sele%C3%A7%C3%A3o%20Gen%C3%B4mica%20com%20suporte%20da%20IA_Vitor) — Tutorial `06_selecao_genomica` (Qmd, R, and HTML) and the challenge in `06_desafio`.
+- [04. Inteligência Artificial e os Dados_Eder](04.%20Intelig%C3%AAncia%20Artificial%20e%20os%20Dados_Eder) — Slides and hands-on practice in [`projeto-analise`](04.%20Intelig%C3%AAncia%20Artificial%20e%20os%20Dados_Eder/projeto-analise).
+- [05. Implementação Prática e Coding suportado por IA_Éder](05.%20Implementa%C3%A7%C3%A3o%20Pr%C3%A1tica%20e%20Coding%20suportado%20por%20IA_%C3%89der) — Slides, [guia_instalacao.md](05.%20Implementa%C3%A7%C3%A3o%20Pr%C3%A1tica%20e%20Coding%20suportado%20por%20IA_%C3%89der/guia_instalacao.md), and the [`vcu-milho-2025`](05.%20Implementa%C3%A7%C3%A3o%20Pr%C3%A1tica%20e%20Coding%20suportado%20por%20IA_%C3%89der/vcu-milho-2025) practice.
+- [06. Seleção Genômica com suporte da IA_Vitor](06.%20Sele%C3%A7%C3%A3o%20Gen%C3%B4mica%20com%20suporte%20da%20IA_Vitor) — Tutorial [`06_selecao_genomica`](06.%20Sele%C3%A7%C3%A3o%20Gen%C3%B4mica%20com%20suporte%20da%20IA_Vitor/06_selecao_genomica.R) (R and HTML) and the challenge in [`06_desafio`](06.%20Sele%C3%A7%C3%A3o%20Gen%C3%B4mica%20com%20suporte%20da%20IA_Vitor/06_desafio).
 - [07. Machine Learning e Deep Learning no Melhoramento Genético_Kaique](07.%20Machine%20Learning%20e%20Deep%20Learning%20no%20Melhoramento%20Gen%C3%A9tico_Kaique) — Reserved for the module; currently only contains `.gitkeep`.
-- [08. IA Generativa e Modelos de Linguagem na Pesquisa Científica_Eder_Kaique](08.%20IA%20Generativa%20e%20Modelos%20de%20Linguagem%20na%20Pesquisa%20Cient%C3%ADfica_Eder_Kaique) — Practice in `Pratica_01_Eder`.
-- [09. Otimização e Simulação_Eder_Vitor](09.%20Otimiza%C3%A7%C3%A3o%20e%20Simula%C3%A7%C3%A3o_Eder_Vitor) — Practices in `Pratica_01_Eder` and `Pratica_02_Vitor`.
-- [10. Tomada de Decisão em Programas de Melhoramento_Rodrigo](10.%20Tomada%20de%20Decis%C3%A3o%20em%20Programas%20de%20Melhoramento_Rodrigo) — Reserved for the module; currently only contains `.gitkeep`.
-- [11. Tendências Futuras, Perguntas e Fechamento_Todos](11.%20Tend%C3%AAncias%20Futuras%2C%20Perguntas%20e%20Fechamento_Todos) — Closing session: deck, slide script, quick readings, and Q&A guide ([README](11.%20Tend%C3%AAncias%20Futuras%2C%20Perguntas%20e%20Fechamento_Todos/README.md)).
-- [12. Multi Agents](12.%20Multi%20Agents) — Multi-agent demo (writer, supervisor, three reviewers) for a short genomic-selection literature sketch; slides and `projeto-revisao-gs` practice ([README](12.%20Multi%20Agents/README.md)).
+- [08. Otimização e Simulação_Eder](08.%20Otimiza%C3%A7%C3%A3o%20e%20Simula%C3%A7%C3%A3o_Eder) — Slides and the [`ciclo-gs-milho`](08.%20Otimiza%C3%A7%C3%A3o%20e%20Simula%C3%A7%C3%A3o_Eder/ciclo-gs-milho) practice.
+- [09. Otimização e Simulação_Vitor](09.%20Otimiza%C3%A7%C3%A3o%20e%20Simula%C3%A7%C3%A3o_Vitor) — Tutorial [`09_otimizacao_simulacao`](09.%20Otimiza%C3%A7%C3%A3o%20e%20Simula%C3%A7%C3%A3o_Vitor/09_otimizacao_simulacao.R) (R and HTML) and the challenge in [`09_desafio`](09.%20Otimiza%C3%A7%C3%A3o%20e%20Simula%C3%A7%C3%A3o_Vitor/09_desafio).
+- [10. IA Generativa e Modelos de Linguagem na Pesquisa Científica_Eder](10.%20IA%20Generativa%20e%20Modelos%20de%20Linguagem%20na%20Pesquisa%20Cient%C3%ADfica_Eder) — Slides and the [`estudo-artigo`](10.%20IA%20Generativa%20e%20Modelos%20de%20Linguagem%20na%20Pesquisa%20Cient%C3%ADfica_Eder/estudo-artigo) practice ([README](10.%20IA%20Generativa%20e%20Modelos%20de%20Linguagem%20na%20Pesquisa%20Cient%C3%ADfica_Eder/estudo-artigo/README.md)).
+- [11. IA Generativa e Modelos de Linguagem na Pesquisa Científica_Kaique](11.%20IA%20Generativa%20e%20Modelos%20de%20Linguagem%20na%20Pesquisa%20Cient%C3%ADfica_Kaique) — Reserved for the module; currently only contains `.gitkeep`.
+- [12. Tomada de Decisão em Programas de Melhoramento_Rodrigo](12.%20Tomada%20de%20Decis%C3%A3o%20em%20Programas%20de%20Melhoramento_Rodrigo) — Reserved for the module; currently only contains `.gitkeep`.
+- [13. Discussão sobr os modelos e Ferramentas](13.%20Discuss%C3%A3o%20sobr%20os%20modelos%20e%20Ferramentas) — Reserved for the discussion on models and tools; currently only contains `.gitkeep`.
+- [14. Tendências Futuras, Perguntas e Fechamento_Todos](14.%20Tend%C3%AAncias%20Futuras%2C%20Perguntas%20e%20Fechamento_Todos) — Closing session: deck, slide script, quick readings, and Q&A guide ([README](14.%20Tend%C3%AAncias%20Futuras%2C%20Perguntas%20e%20Fechamento_Todos/README.md)).
 
 ## How to download this repository
 
