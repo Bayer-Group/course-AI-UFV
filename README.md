@@ -26,7 +26,7 @@ Morning from 8:00 AM to 12:00 PM and afternoon from 1:30 PM to 5:00 PM. Each row
 | Nov 3, 2026 | 8:00 AM–12:00 PM | [1. Introduction to Artificial Intelligence](01.%20Introdu%C3%A7%C3%A3o%20%C3%A0%20Inteligencia%20Artificial_Rodrigo) | Rodrigo | Slides |
 | Nov 3, 2026 | 8:00 AM–12:00 PM | [2. AI concepts, models, agents, IDEs, and hardware for AI](02.%20Conceitos%20em%20IA%2C%20Modelos%2C%20Agents%2C%20IDE%2C%20Hardware%20para%20IA_Kaique) | Kaique | Slides |
 | Nov 3, 2026 | 8:00 AM–12:00 PM | [3. High-throughput phenotyping with AI support](03.%20Fenotipagem%20de%20Alto%20Desempenho%20com%20suporte%20de%20IA_Vinicius) | Vinicius | Slides |
-| Nov 3, 2026 | 8:00 AM–12:00 PM | [4. Artificial Intelligence and data](04.%20Intelig%C3%AAncia%20Artificial%20e%20os%20Dados_Eder) | Éder | Slides and live demo |
+| Nov 3, 2026 | 1:30 PM–5:00 PM  | [4. Artificial Intelligence and data](04.%20Intelig%C3%AAncia%20Artificial%20e%20os%20Dados_Eder) | Éder | Slides and live demo |
 | Nov 3, 2026 | 1:30 PM–5:00 PM | [5. Hands-on implementation and AI-assisted coding](05.%20Implementa%C3%A7%C3%A3o%20Pr%C3%A1tica%20e%20Coding%20suportado%20por%20IA_%C3%89der) | Éder | Slides and live demo |
 | Nov 4, 2026 | 8:00 AM–12:00 PM | [6. Genomic selection with AI support](06.%20Sele%C3%A7%C3%A3o%20Gen%C3%B4mica%20com%20suporte%20da%20IA_Vitor) | Vitor | Slides and live demo |
 | Nov 4, 2026 | 8:00 AM–12:00 PM | [7. Machine learning and deep learning in plant breeding](07.%20Machine%20Learning%20e%20Deep%20Learning%20no%20Melhoramento%20Gen%C3%A9tico_Kaique) | Kaique | Slides, live demo, and risk management |
