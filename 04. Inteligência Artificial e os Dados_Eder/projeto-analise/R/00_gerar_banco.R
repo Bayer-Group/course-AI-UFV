@@ -201,6 +201,7 @@ if (!setequal(flag, plantados)) {
        paste(setdiff(union(flag, plantados), intersect(flag, plantados)), collapse = ", "))
 }
 
+### verificar esta etapa
 qualidade <- do.call(rbind, lapply(split(cur, cur$ambiente_id), function(a) {
   ok <- a$PROD[!is.na(a$PROD)]
   data.frame(
