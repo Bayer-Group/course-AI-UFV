@@ -1,4 +1,4 @@
-"ambiente_id","n_parcelas","n_ausentes","n_validos","media","dp","cv_pct"
-"PGO_2025_V",40,2,38,10267.5,830.3,8.1
-"SLG_2025_V",40,2,38,9079,615.5,6.8
-"UDI_2025_V",40,2,38,11644.1,933,8
+"ambiente_id","n_parcelas","n_ausentes","n_validos","completude_pct","media","mediana","dp","cv_pct","minimo","maximo","amplitude","iqr","n_outliers","assimetria"
+"PGO_2025_V",40,2,38,95,10267.5,10133.5,830.3,8.1,8765.4,13405.3,4639.9,1050.1,1,1.2
+"SLG_2025_V",40,2,38,95,9079,9161.2,615.5,6.8,7798.9,10297.6,2498.7,851.1,0,-0.24
+"UDI_2025_V",40,2,38,95,11644.1,11606.5,933,8,8092.7,13406.5,5313.8,1146.7,1,-1.2
