@@ -407,7 +407,8 @@ REF_DF <- c(0.005, 0.010, 0.030)   # referencias marcadas no grafico
 p3 <- ggplot(pareto, aes(100 * delta_f, ganho)) +
   geom_vline(xintercept = 100 * REF_DF, linetype = "dashed",
              colour = COR["vinho"], linewidth = 0.8) +
-  annotate("text", x = 100 * REF_DF, y = max(pareto$ganho),
+  annotate("text", x = 100 * REF_DF,
+           y = max(pareto$ganho) - c(0, 0.35, 0),   # 0,5% e 1% em alturas diferentes
            label = c("  teto: 0,5% por ciclo", "  1%", "  3%"),
            hjust = 0, vjust = 1, size = 3.8, colour = COR["vinho"]) +
   geom_line(colour = COR["azul"], linewidth = 1) +
