@@ -23,16 +23,15 @@ set.seed(909)
 #  a intensidade de selecao e CONSTANTE e sai da comparacao. O que varia e
 #  so a qualidade da medicao - e e exatamente isso que o bloco C mede.
 #
-#  TETO_DF = 1% por ciclo. Nao e um numero arbitrario: cada cruzamento
-#  tambem repoe cerca de 1% de variabilidade nova. Abaixo do teto a
-#  endogamia e reposta; acima dele o programa consome o proprio capital.
+#  TETO_DF = 0,5% por ciclo. E um valor de TRABALHO, nao o ideal: qual teto
+#  traz a maior sustentabilidade ao programa e uma pergunta em aberto.
 # =============================================================================
 N_GEN      <- 600      # linhagens avaliadas por ciclo (FIXO)
 ORCAMENTO  <- 3600     # parcelas por ciclo  ->  L * R <= 6
 N_CICLOS   <- 5
 N_SEL      <- 60       # parentais recrutados por ciclo (10% de N_GEN)
 N_POOL     <- 300      # candidatos oferecidos ao OCS (ver nota no motor)
-TETO_DF    <- 0.01     # endogamia maxima por ciclo
+TETO_DF    <- 0.005    # endogamia maxima por ciclo (valor de trabalho)
 H2_PARCELA <- 0.25     # herdabilidade na parcela individual
 PROP_GXE   <- 0.40     # fracao da variancia genetica que e genotipo x ambiente
 
@@ -357,7 +356,7 @@ cic <- aggregate(cbind(media_gen, sd_gen, coancestria, acuracia) ~ ciclo + estra
 cic$rotulo <- factor(cic$estrategia, levels = ESTRAT,
                      labels = c("Sem selecao (controle)",
                                 "Truncamento (60 melhores)",
-                                sprintf("OCS (teto %.0f%%/ciclo)", 100 * TETO_DF)))
+                                sprintf("OCS (teto %.1f%%/ciclo)", 100 * TETO_DF)))
 R$ciclos <- cic
 print(cic[cic$ciclo == N_CICLOS, c("rotulo", "media_gen", "sd_gen", "coancestria")])
 
@@ -382,14 +381,14 @@ p2 <- ggplot(cic, aes(ciclo, sd_gen, colour = rotulo)) +
 png_salvar(p2, "02_diversidade_ciclos.png")
 
 # =============================================================================
-#  BLOCO B - OCS E O TETO DE 1% POR CICLO
+#  BLOCO B - OCS E O TETO DE 0,5% POR CICLO
 # -----------------------------------------------------------------------------
 #  Mais endogamia sempre rende mais ganho: a restricao e o que custa. Logo
 #  a pergunta nao e "quanto ganho quero" - e "quanto posso gastar sem
-#  descapitalizar". O cruzamento repoe cerca de 1% por ciclo; e esse o teto.
+#  descapitalizar". Aqui o teto e 0,5% por ciclo - qual e o ideal fica em aberto.
 # =============================================================================
 cat("\n== BLOCO B: OCS ==\n")
-DFS <- c(0.0025, 0.005, 0.0075, 0.010, 0.015, 0.020)
+DFS <- c(0.0025, 0.005, 0.0075, 0.010, 0.015, 0.020, 0.030)
 SEM_DF <- 71:76        # as mesmas replicas pareadas para todo delta_f
 pareto <- do.call(rbind, lapply(DFS, function(df) {
   rr <- lapply(SEM_DF, function(s) simular("ocs", delta_f = df, semente = s))
@@ -404,18 +403,18 @@ pareto <- do.call(rbind, lapply(DFS, function(df) {
 R$pareto <- pareto
 print(pareto)
 
+REF_DF <- c(0.005, 0.010, 0.030)   # referencias marcadas no grafico
 p3 <- ggplot(pareto, aes(100 * delta_f, ganho)) +
-  geom_vline(xintercept = 100 * TETO_DF, linetype = "dashed",
-             colour = COR["vinho"], linewidth = 0.9) +
-  annotate("text", x = 100 * TETO_DF, y = min(pareto$ganho),
-           label = "  teto: 1% por ciclo\n  e o que o cruzamento repoe",
-           hjust = 0, vjust = 0, size = 3.8, colour = COR["vinho"],
-           lineheight = 0.95) +
+  geom_vline(xintercept = 100 * REF_DF, linetype = "dashed",
+             colour = COR["vinho"], linewidth = 0.8) +
+  annotate("text", x = 100 * REF_DF, y = max(pareto$ganho),
+           label = c("  teto: 0,5% por ciclo", "  1%", "  3%"),
+           hjust = 0, vjust = 1, size = 3.8, colour = COR["vinho"]) +
   geom_line(colour = COR["azul"], linewidth = 1) +
   geom_point(aes(shape = dentro_teto), size = 3.6, colour = COR["azul"]) +
   scale_shape_manual(values = c(`TRUE` = 16, `FALSE` = 4), guide = "none") +
   labs(title = "Ganho cresce com a endogamia autorizada - e esse e o problema",
-       subtitle = "Cada ponto: 5 ciclos de OCS com um teto diferente. X = acima do teto sustentavel",
+       subtitle = "Cada ponto: 5 ciclos de OCS com um teto diferente. X = acima do teto adotado",
        x = "Endogamia autorizada por ciclo (%)",
        y = "Ganho em 5 ciclos (desvios geneticos)") + TEMA
 png_salvar(p3, "03_teto_endogamia.png")
