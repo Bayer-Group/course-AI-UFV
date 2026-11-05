@@ -1,0 +1,461 @@
+# ============================================================================
+# Parametros da simulacao — Meuwissen, Hayes & Goddard (2001)
+# Fonte primaria: Methods (p. 1820-1823), Table 1 (p. 1821), Appendix (p. 1828-1829)
+# ============================================================================
+
+# --- Genoma ------------------------------------------------------------------
+
+genoma:
+  n_cromossomos:
+    valor: 10
+    unidade: cromossomos
+    fonte: "Table 1, p. 1821"
+    status: informado
+
+  comprimento_cromossomo:
+    valor: 100
+    unidade: cM
+    fonte: "p. 1820: '10 chromosomes of 100 cM each'"
+    status: informado
+
+  comprimento_total:
+    valor: 1000
+    unidade: cM
+    fonte: "Abstract, p. 1819: 'A genome of 1000 cM'"
+    status: informado
+
+  espacamento_marcadores:
+    valor: 1
+    unidade: cM
+    fonte: "Abstract, p. 1819: 'marker spacing of 1 cM'"
+    status: informado
+
+  n_marcadores_por_cromossomo:
+    valor: 101
+    unidade: loci
+    fonte: "p. 1820: 'there were 101 marker loci per chromosome'"
+    status: informado
+
+  n_marcadores_total:
+    valor: 1010
+    unidade: loci
+    fonte: "p. 1821: '1010 (= 10 x 101) marker loci'"
+    status: informado
+
+  n_qtl_por_cromossomo:
+    valor: 100
+    unidade: QTL
+    fonte: "p. 1820: 'In the middle of each centimorgan, there was a QTL'"
+    status: informado
+
+  n_qtl_total:
+    valor: 1000
+    unidade: QTL
+    fonte: "p. 1820: 'there are 1000 QTL'"
+    status: informado
+
+  posicao_qtl:
+    valor: "meio de cada centimorgan"
+    unidade: ~
+    fonte: "p. 1820"
+    status: informado
+
+  distancia_qtl_marcador:
+    valor: 0.5
+    unidade: cM
+    fonte: "p. 1820: 'every QTL was flanked by two marker loci at a distance of 0.5 cM'"
+    status: informado
+
+# --- Mutacao QTL -------------------------------------------------------------
+
+mutacao_qtl:
+  taxa_por_locus:
+    valor: 2.5e-5
+    unidade: "mutacoes / locus / geracao"
+    fonte: "p. 1820, Table 1"
+    status: informado
+
+  taxa_por_genoma_haploide:
+    valor: 2.5e-2
+    unidade: "mutacoes / genoma haploide / geracao"
+    fonte: "p. 1820: '2.5 x 10^-2 per haploid genome'"
+    status: informado
+
+  distribuicao_efeitos:
+    tipo: gamma
+    parametro_escala:
+      valor: 1.66
+      fonte: "p. 1820, Table 1: 'arbitrarily set to 1.66, which resulted in a genetic variance of 1'"
+      status: informado
+    parametro_forma:
+      valor: 0.4
+      fonte: "p. 1820, Table 1: 'shape parameter b = 0.4' (Hayes & Goddard 2001)"
+      status: informado
+
+  sinal_do_efeito:
+    valor: "positivo ou negativo com probabilidade 0.5"
+    unidade: ~
+    fonte: "p. 1820: 'the sign of the QTL effect is sampled to be positive or negative with probability 0.5'"
+    status: informado
+
+  dominancia:
+    valor: 0
+    unidade: ~
+    fonte: "Table 1, p. 1821: 'Dominance of QTL effects: 0'"
+    status: informado
+
+  efeitos_epistaticos:
+    valor: null
+    unidade: ~
+    fonte: ~
+    status: suposto
+    nota: >
+      O artigo nao menciona epistasia. Pelo modelo y = mu + sum(X_i g_i) + e,
+      apenas efeitos aditivos sao simulados. Nao ha afirmacao explicita de que
+      epistasia foi excluida, mas ela esta ausente do modelo.
+
+# --- Mutacao de marcadores ---------------------------------------------------
+
+mutacao_marcadores:
+  taxa_por_locus:
+    valor: 2.5e-3
+    unidade: "mutacoes / locus / geracao"
+    fonte: "p. 1820, Table 1"
+    status: informado
+
+  modelo_alelos:
+    valor: "infinite alleles (cada mutacao cria alelo unico)"
+    unidade: ~
+    fonte: "p. 1820: 'every mutation at a marker locus resulted in a new unique marker allele'"
+    status: informado
+
+# --- Variancias e herdabilidade ----------------------------------------------
+
+variancias:
+  variancia_genetica:
+    valor: 1.0
+    unidade: "unidades de variancia"
+    fonte: "p. 1820: 'resulted in a genetic variance of 1 (see appendix)'"
+    status: informado
+
+  variancia_ambiental:
+    valor: 1.0
+    unidade: "unidades de variancia"
+    fonte: "p. 1820: 'the environmental variance was also assumed to be 1'"
+    status: informado
+
+  herdabilidade:
+    valor: 0.5
+    unidade: ~
+    fonte: "p. 1820: 'heritability was 0.5'"
+    status: informado
+
+  variancia_mutacional_por_geracao:
+    valor: 5.0e-3
+    unidade: "unidades de variancia ambiental / geracao"
+    fonte: "p. 1820: 'sigma^2_m = 1000 x mu x E(a^2) = 5 x 10^-3'"
+    status: informado
+
+  variancia_esperada_por_segmento:
+    valor: 0.001
+    unidade: "unidades de variancia"
+    fonte: "p. 1822: 'E(sigma^2_gi) = 0.001 (see appendix)'; Appendix p. 1828"
+    status: informado
+
+  distribuicao_erro:
+    valor: normal
+    media: 0
+    variancia: 1.0
+    fonte: "p. 1820: 'adding a normally distributed error term with variance 1'"
+    status: informado
+
+# --- Estrutura populacional --------------------------------------------------
+
+populacao:
+  Ne:
+    valor: 100
+    unidade: individuos
+    fonte: "p. 1820, Table 1: 'Ne = 100'"
+    status: informado
+
+  geracoes_equilibrio:
+    valor: 1000
+    unidade: geracoes
+    fonte: "p. 1820: 'simulated for 1000 generations at an effective size of 100'"
+    status: informado
+
+  selecao_durante_equilibrio:
+    valor: "nenhuma (ignorada por simplicidade)"
+    unidade: ~
+    fonte: "p. 1820: 'natural and artificial selection... has been ignored for simplicity'"
+    status: informado
+
+  acasalamento:
+    valor: "aleatorio"
+    unidade: ~
+    fonte: "Table 1 nota b, p. 1821: 'random mating of males and females'"
+    status: informado
+
+  estrutura_ideal:
+    valor: "Ne = N (probabilidade igual de cada individuo ser pai/mae)"
+    unidade: ~
+    fonte: "Table 1 nota b, p. 1821"
+    status: informado
+
+  geracao_1001:
+    N: 200
+    machos: 100
+    femeas: 100
+    estrutura: ideal
+    fonte: "p. 1820, Table 1"
+    status: informado
+
+  geracao_1002:
+    N: 2000
+    n_familias: 20
+    tipo_familia: "meio-irmaos (half-sib)"
+    tamanho_familia: 100
+    fonte: "p. 1820, Table 1"
+    status: informado
+
+  geracao_1003:
+    N: 2000
+    estrutura: ideal
+    fenotipos: "nenhum (juvenis)"
+    fonte: "p. 1820, Table 1"
+    status: informado
+
+  condicao_inicial_gen0:
+    valor: null
+    unidade: ~
+    fonte: ~
+    status: suposto
+    nota: >
+      O artigo nao especifica o estado dos loci na geracao 0 (todos
+      monomorficos? frequencias uniformes?). Apenas diz que a populacao foi
+      simulada por 1000 geracoes para atingir equilibrio mutacao-deriva,
+      o que torna o estado inicial irrelevante para as geracoes de interesse.
+
+# --- Genotipagem e fenotipos -------------------------------------------------
+
+dados:
+  geracoes_genotipadas: [1001, 1002, 1003]
+  fonte_genotipagem: "Table 1, p. 1821: 'Generations 1001 and later'"
+  status_genotipagem: informado
+
+  geracoes_fenotipadas: [1001, 1002]
+  fonte_fenotipagem: "Table 1, p. 1821: 'Generations 1001 and 1002'"
+  status_fenotipagem: informado
+
+  n_registros_fenotipicos:
+    valor: 2200
+    unidade: registros
+    fonte: "p. 1821: '200 and 2000 marker-genotyped and recorded animals'"
+    status: informado
+    detalhe: "200 da geracao 1001 + 2000 da geracao 1002"
+
+  n_haplotipos_por_segmento:
+    valor: ~50
+    unidade: haplotipos distintos
+    fonte: "p. 1821: 'on average ~50 different haplotypes per 1-cM segment'"
+    status: informado
+
+  n_efeitos_total:
+    valor: ~50000
+    unidade: efeitos de haplotipos
+    fonte: "p. 1821: 'the total number of haplotype effects... was ~50,000'"
+    status: informado
+
+  fases_de_ligacao:
+    valor: "conhecidas sem erro"
+    fonte: "p. 1821: 'assumed that the linkage phases... were known without error'"
+    status: informado
+
+# --- Parametros do metodo LS -------------------------------------------------
+
+metodo_LS:
+  limiar_log_verossimilhanca:
+    valor: 14
+    unidade: "unidades de ln-verossimilhanca"
+    fonte: "p. 1821: 'log-likelihood in the valleys was at least 14 units lower'"
+    status: informado
+
+  limiar_LOD_equivalente:
+    valor: 6
+    unidade: LOD
+    fonte: "p. 1821: 'the natural log equivalent to a LOD score of 6 units'"
+    status: informado
+
+  media_geral_estimacao:
+    valor: 0
+    unidade: ~
+    fonte: "p. 1821: 'overall mean is also arbitrarily set to zero'"
+    status: informado
+
+# --- Parametros do metodo BLUP -----------------------------------------------
+
+metodo_BLUP:
+  variancia_por_segmento:
+    valor: 0.001
+    unidade: "unidades de variancia"
+    fonte: "p. 1822: 'E(sigma^2_gi) = 0.001'"
+    status: informado
+
+  variancia_residual:
+    valor: 1.0
+    unidade: "unidades de variancia"
+    fonte: "p. 1822: 'error variance... is set equal to its true value of 1'"
+    status: informado
+
+# --- Parametros do metodo BayesA ---------------------------------------------
+
+metodo_BayesA:
+  priori_variancia_segmento:
+    distribuicao: "chi-quadrado invertida escalada"
+    nu: 4.012
+    S: 0.0020
+    media: 0.001
+    variancia: 1.675e-4
+    fonte: "p. 1822, Appendix p. 1829"
+    status: informado
+
+  priori_variancia_residual:
+    distribuicao: "chi-quadrado invertida escalada"
+    nu: -2
+    S: 0
+    nota_artigo: "yields a uniformly distributed prior, i.e., a flat prior"
+    fonte: "p. 1822"
+    status: informado
+
+  mcmc_ciclos_total:
+    valor: 10000
+    unidade: ciclos
+    fonte: "p. 1822: 'Gibbs sampler was run for 10,000 cycles'"
+    status: informado
+
+  mcmc_burnin:
+    valor: 1000
+    unidade: ciclos
+    fonte: "p. 1822: 'the first 1000 cycles were discarded as burn in'"
+    status: informado
+
+  mcmc_criterio_burnin:
+    valor: "inspecao grafica"
+    fonte: "p. 1822: 'by graphical inspection'"
+    status: informado
+
+  mcmc_thinning:
+    valor: null
+    unidade: ~
+    fonte: ~
+    status: suposto
+    nota: >
+      O artigo nao menciona thinning (descarte de ciclos intermediarios).
+      Diz apenas que as amostras de g 'from all later cycles were averaged',
+      sugerindo que todas as amostras pos-burnin foram usadas.
+
+  mcmc_n_cadeias:
+    valor: null
+    unidade: ~
+    fonte: ~
+    status: suposto
+    nota: >
+      O artigo nao menciona multiplas cadeias nem diagnosticos de
+      convergencia alem da inspecao grafica. Aparentemente uma unica cadeia.
+
+# --- Parametros do metodo BayesB ---------------------------------------------
+
+metodo_BayesB:
+  prob_variancia_zero:
+    valor: 0.947
+    unidade: ~
+    fonte: "Appendix p. 1829: 'p = 1 - 0.0099/0.1889 = 0.947'"
+    status: informado
+
+  priori_variancia_segmento_positiva:
+    distribuicao: "chi-quadrado invertida escalada"
+    nu: 4.234
+    S: 0.0429
+    fonte: "p. 1823, Appendix p. 1829"
+    status: informado
+    nota: "Condicional a sigma^2_gi > 0"
+
+  priori_variancia_residual:
+    valor: "mesma de BayesA (flat prior)"
+    fonte: "p. 1822"
+    status: informado
+    nota: >
+      O artigo define a priori do erro em BayesA. BayesB usa o mesmo
+      Gibbs chain com excecao da amostragem de sigma^2_gi, portanto a priori
+      do erro e a mesma.
+
+  metropolis_hastings_ciclos:
+    valor: 100
+    unidade: "ciclos internos por ciclo do Gibbs"
+    fonte: "p. 1823: 'running the above Metropolis-Hastings algorithm for 100 cycles'"
+    status: informado
+
+  mcmc_ciclos_total:
+    valor: 10000
+    unidade: ciclos
+    fonte: "p. 1823: 'also run for 10,000 cycles'"
+    status: informado
+
+  mcmc_burnin:
+    valor: 1000
+    unidade: ciclos
+    fonte: "p. 1823: 'the first 1000 cycles were discarded as burn in'"
+    status: informado
+
+# --- Replicatas --------------------------------------------------------------
+
+replicatas:
+  n_replicatas_LS_BLUP_BayesB:
+    valor: 5
+    unidade: replicatas
+    fonte: "Table 2, p. 1824: 'Mean of five replicated simulations'"
+    status: informado
+
+  n_replicatas_BayesA:
+    valor: 1
+    unidade: replicatas
+    fonte: "Table 2, p. 1824: 'except for BayesA which is based on one replicate'"
+    status: informado
+    nota: "Uma unica replicata por custo computacional"
+
+  semente_aleatoria:
+    valor: null
+    unidade: ~
+    fonte: ~
+    status: suposto
+    nota: >
+      O artigo nao reporta sementes de geracao de numeros aleatorios.
+      Impede reproducao exata dos resultados numericos, mas nao dos
+      resultados em media.
+
+# --- Cenarios alternativos (explorados nos resultados) -----------------------
+
+cenarios_alternativos:
+  n_registros_reduzidos:
+    valores: [500, 1000]
+    fonte: "Table 3, p. 1825"
+    status: informado
+    nota: >
+      Obtidos removendo animais da geracao 1002 com menor numero de filhos
+      na geracao 1003 (p. 1825).
+
+  espacamento_marcadores_alternativos:
+    valores: [2, 4]
+    unidade: cM
+    fonte: "Table 4, p. 1825"
+    status: informado
+    nota: >
+      Obtidos omitindo marcadores alternados do dataset original (p. 1825).
+      Ajustes: BLUP sigma^2_gi = 0.0056 (2cM), 0.0112 (4cM);
+      BayesB (1-p) = 0.106 (2cM), 0.212 (4cM).
+
+  geracoes_futuras:
+    valores: [1003, 1004, 1005, 1006, 1007, 1008]
+    fonte: "Table 5, p. 1827"
+    status: informado
+    nota: "Geracoes 1004-1008 obtidas da mesma forma que 1003 a partir dos pais"
