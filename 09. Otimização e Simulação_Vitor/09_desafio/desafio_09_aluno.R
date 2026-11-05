@@ -23,10 +23,11 @@
 #     - herdabilidade na parcela individual .................. 0,25
 #     - fracao da variancia genetica que e genotipo x ambiente . 40%
 #     - endogamia autorizada por ciclo ....................... no maximo 1%
+#       (teto do desafio)
 #     - horizonte ............................................ 5 ciclos
 #
-#  O teto de 1% nao e arbitrario: cada ciclo de cruzamento repoe cerca de
-#  1% de variabilidade nova. Acima disso o programa gasta mais do que repoe.
+#  ATENCAO: neste desafio o teto e 1% por ciclo - NAO os 3% usados na aula.
+#  delta_f acima de 1% e escolha invalida.
 #
 #  COMO SUA ESCOLHA E AVALIADA
 #
@@ -72,7 +73,7 @@ if (is.na(L) || is.na(R) || is.na(delta_f)) {
 } else if (parcelas > ORCAMENTO) {
   cat("INVALIDO: passa do orcamento em", parcelas - ORCAMENTO, "parcelas.\n")
 } else if (delta_f > TETO_DF) {
-  cat("INVALIDO: delta_f acima do teto de 1% por ciclo.\n")
+  cat("INVALIDO: delta_f acima do teto de 1% por ciclo (teto do desafio).\n")
 } else {
   cat("Escolha valida. Sobram", ORCAMENTO - parcelas, "parcelas.\n")
 }
